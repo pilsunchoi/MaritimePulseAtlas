@@ -1,11 +1,14 @@
-"""PortWatch ArcGIS 피처 서비스 -> 수집일(vintage)별 Parquet 스냅샷.
+"""PortWatch ArcGIS 피처 서비스 -> 수집 시각(vintage)별 Parquet 스냅샷.
 
 층마다 전체 행을 ObjectId 순으로 페이지 단위(5,000행) 병렬 수집해
 data/raw/portwatch/<vintage>/<table>.parquet 로 저장한다. 파생 없음.
 PortWatch는 방법론 개선 때 과거 값도 고치므로, 매 수집을 통째 스냅샷으로 남긴다.
 manifest.json에 층별 행 수·서비스 최종 수정 시각·수집 시각을 남긴다.
 
-    python scripts/01_fetch_portwatch.py                  # 전 층, vintage=오늘
+vintage는 수집을 시작한 UTC 시각(YYYY-MM-DDTHHMMZ). 로컬(한국 시간)과 GitHub Actions(UTC)가
+같은 이름 규칙을 쓰고, 같은 날 두 번 받아도 앞의 스냅샷을 덮어쓰지 않는다. 글자 순서가 곧 시간 순서다.
+
+    python scripts/01_fetch_portwatch.py                  # 전 층, vintage=지금(UTC)
     python scripts/01_fetch_portwatch.py --only ports chokepoints
 """
 import sys
@@ -92,7 +95,7 @@ def fetch_layer(s, service):
 
 
 def main(only=None, vintage=None):
-    vintage = vintage or dt.date.today().isoformat()
+    vintage = vintage or dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H%MZ")
     out = RAW / vintage
     out.mkdir(parents=True, exist_ok=True)
     man_path = out / "manifest.json"
@@ -120,6 +123,6 @@ def main(only=None, vintage=None):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--only", nargs="*", choices=list(LAYERS))
-    ap.add_argument("--vintage", help="스냅샷 폴더 이름 (기본: 오늘 날짜)")
+    ap.add_argument("--vintage", help="스냅샷 폴더 이름 (기본: 지금 UTC, YYYY-MM-DDTHHMMZ)")
     a = ap.parse_args()
     main(a.only, a.vintage)

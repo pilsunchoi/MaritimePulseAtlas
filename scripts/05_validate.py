@@ -26,7 +26,7 @@ def check(name, ok, detail=""):
 def main():
     con = duckdb.connect(str(DB_PATH), read_only=True)
     q = lambda s, *a: con.execute(s, list(a)).fetchall()
-    vintage = q("SELECT max(vintage) FROM snapshots WHERE loaded")[0][0]
+    fetched = q("SELECT max(fetched_at) FROM snapshots WHERE loaded")[0][0].date()
 
     for t, rows in q("SELECT tbl, rows FROM snapshots WHERE loaded ORDER BY tbl"):
         n = q(f"SELECT count(*) FROM {t}")[0][0]
@@ -39,7 +39,7 @@ def main():
 
     for t in ["ports_daily", "chokepoints_daily", "country_daily"]:
         lo, hi = q(f"SELECT min(date), max(date) FROM {t}")[0]
-        lag = (vintage - hi).days
+        lag = (fetched - hi).days
         check(f"{t} 기간", lo == dt.date(2019, 1, 1) and lag <= 14, f"{lo} ~ {hi} (수집일 대비 {lag}일)")
 
     n_cp, n_days, n_rows = q("""SELECT count(DISTINCT portid), count(DISTINCT date), count(*)
@@ -49,8 +49,9 @@ def main():
     n_kor = q("SELECT count(*) FROM ports WHERE ISO3 = ?", KOR)[0][0]
     check("한국 항만 메타", n_kor >= 15, f"{n_kor}곳")
 
-    # 일별 항만 층에는 메타 2,065곳 중 일부만 있다(한국 22곳 중 10곳). 국가 층은 전 항만 합이므로
-    # 항만 합계 <= 국가 합계이고, 한국은 큰 항만이 다 들어 있어 비율이 0.9를 넘어야 한다(2026-09 기준 약 0.96).
+    # 일별 항만 층에는 메타의 항만 중 일부만 있을 수 있다(2026-09-15 17:58 UTC 수정 전 한국 22곳 중 10곳,
+    # 이후 22곳 모두). 국가 층은 전 항만 합이므로 항만 합계 <= 국가 합계이고, 한국은 큰 항만이 다 들어 있어
+    # 수입 비율이 0.9를 넘어야 한다.
     n_pd = q("SELECT count(DISTINCT portid) FROM ports_daily WHERE ISO3 = ?", KOR)[0][0]
     missing = [r[0] for r in q("""SELECT portname FROM ports WHERE ISO3 = ? AND portid NOT IN
                                   (SELECT DISTINCT portid FROM ports_daily) ORDER BY vessel_count_total DESC""", KOR)]

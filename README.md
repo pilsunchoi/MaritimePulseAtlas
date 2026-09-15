@@ -1,6 +1,6 @@
 # Maritime Pulse Atlas — 해협·운하와 한국 항만의 일별 해상 물동량 (2019–)
 
-선박자동식별장치(AIS) 신호로 추정한 일별 해상 물동량을 해협·운하 28곳과 한국 항만(일별 자료가 있는 10곳과 국가 합계)에 대해 평년 범위와 견주어 본다. 자료는 IMF와 옥스퍼드대의 [IMF PortWatch](https://portwatch.imf.org/)이고, 매주 화요일 갱신된다. 짝 사이트 [Trade Network Atlas](https://pilsunchoi.github.io/TradeNetworkAtlas/)가 BACI로 연 단위 교역 네트워크를 본다면, 이 저장소는 같은 교역을 바다 위에서 일 단위로 본다.
+선박자동식별장치(AIS) 신호로 추정한 일별 해상 물동량을 해협·운하 28곳과 한국 항만 22곳·국가 합계에 대해 평년 범위와 견주어 본다. 자료는 IMF와 옥스퍼드대의 [IMF PortWatch](https://portwatch.imf.org/)이고, 매주 화요일 갱신된다. 짝 사이트 [Trade Network Atlas](https://pilsunchoi.github.io/TradeNetworkAtlas/)가 BACI로 연 단위 교역 네트워크를 본다면, 이 저장소는 같은 교역을 바다 위에서 일 단위로 본다.
 
 ## 무엇이 들어 있나
 
@@ -16,11 +16,11 @@
 
 PortWatch는 ArcGIS 피처 서비스로 공개된다. 여덟 층을 받는다.
 
-| DuckDB 테이블 | PortWatch 층 | 행 (2026-09-16) | 내용 |
+| DuckDB 테이블 | PortWatch 층 | 행 (2026-09-15T2230Z) | 내용 |
 |---|---|---:|---|
 | `ports` | PortWatch_ports_database | 2,065 | 항만 메타(위경도, LOCODE, 전국 해상 수출입 중 비중, 주요 산업) |
 | `chokepoints` | PortWatch_chokepoints_database | 28 | 해협·운하 메타 |
-| `ports_daily` | Daily_Ports_Data | 3,722,000 | 항만 × 일. 입항 척수, 수입·수출(톤) × 선종 5개. 메타 2,065곳 중 1,325곳만 있다(한국 22곳 중 10곳). 입항 0인 날도 행이 있다 |
+| `ports_daily` | Daily_Ports_Data | 5,804,715 | 항만 × 일. 입항 척수, 수입·수출(톤) × 선종 5개. 메타 2,065곳 모두 있다(2026-09-15 17:58 UTC 수정 전에는 1,325곳, 한국 22곳 중 10곳). 입항 0인 날도 행이 있다 |
 | `chokepoints_daily` | Daily_Chokepoints_Data | 78,764 | 해협 × 일. 통과 척수, 통과량(톤) × 선종 |
 | `country_daily` | Daily_Trade_Data_REG | 약 55만 | 국가·권역 × 일 |
 | `trade_monthly` | Monthly_TradeNow | 18,032 | 권역 × 월. 무역 금액·물량 지수 |
@@ -28,16 +28,16 @@ PortWatch는 ArcGIS 피처 서비스로 공개된다. 여덟 층을 받는다.
 | `port_links` | Spillover_Simulator_Maritime_Connections | 155,521 | 항만 간 연결(OxMarTrans 모형, 시간 불변) |
 
 - 선종: 컨테이너, 건화물(벌크), 일반화물, 로로선, 탱커.
-- `country_daily`는 일별 항만 층에 없는 항만까지 합한 값이라 항만 합계보다 크다(최근 1년 수입 기준 한국 0.96, 일본 0.96, 중국 0.87, 호주 1.00). 대시보드의 “한국 전체”는 국가 층이다.
+- `country_daily`는 모든 항만의 합이다. 2026-09-15 17:58 UTC 수정부터는 일별 항만 층도 모든 항만을 담아 항만 합계가 국가 층과 같다(최근 1년 수입 기준 한국·일본·중국·미국·호주 모두 1.00). 그 전에는 일부 항만이 빠져 항만 합계가 더 작았다(한국 0.96, 중국 0.87). 이 수정은 항만을 더하기만 했고, 이미 있던 항만·날짜의 수입 값은 하나도 바뀌지 않았다(`ports_daily_vintages`로 대조). 대시보드의 “한국 전체”는 국가 층이다.
 - PortWatch 층의 `returnCountOnly`는 `Daily_Ports_Data`에서 틀린 값(342,000)을 돌려주므로, 수집 스크립트는 통계 쿼리로 행 수를 세고 ObjectId 구간으로 나눠 받는다.
 - 수입·수출과 통과량은 선박의 재화중량톤수(DWT)와 흘수 변화로 추정한 적재량(메트릭톤)이다. 환적 화물이 섞이고, AIS를 끈 선박은 빠진다.
-- **사후 수정**: PortWatch는 방법론을 고치면 과거 값도 바꾼다. 그래서 수집할 때마다 전 층을 `data/raw/portwatch/<수집일>/`에 Parquet으로 통째 남기고, DuckDB의 `<table>_vintages` 뷰로 스냅샷끼리 비교할 수 있게 했다.
+- **사후 수정**: PortWatch는 방법론을 고치거나 범위를 넓히면 과거 값도 바꾼다. 그래서 수집할 때마다 전 층을 `data/raw/portwatch/<vintage>/`에 Parquet으로 통째 남기고, DuckDB의 `<table>_vintages` 뷰로 스냅샷끼리 비교할 수 있게 했다. vintage는 수집을 시작한 UTC 시각(`2026-09-15T2231Z` 꼴)이라 로컬(한국 시간)과 GitHub Actions(UTC)가 같은 규칙을 쓰고, 같은 날 두 번 받아도 덮어쓰지 않는다. GitHub Actions의 스냅샷은 저장소에 넣지 않고 워크플로 산출물로 90일 보관한다.
 
 ## 다시 만들기
 
 ```
 conda activate kcsdb                          # Python 3.12+, duckdb, pandas, pyarrow, requests
-python scripts/01_fetch_portwatch.py          # 전 층 -> data/raw/portwatch/<오늘>/*.parquet (약 5분)
+python scripts/01_fetch_portwatch.py          # 전 층 -> data/raw/portwatch/<UTC 수집 시각>/*.parquet (약 5분)
 python scripts/02_build_db.py                 # 최신 스냅샷 -> data/processed/portwatch.duckdb
 python scripts/05_validate.py                 # 행 수·키 중복·기간·해협 완전성·한국 합계 대조
 python scripts/10_export_site_data.py         # docs/data/*.js

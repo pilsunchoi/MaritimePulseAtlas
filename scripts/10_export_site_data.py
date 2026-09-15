@@ -102,8 +102,8 @@ def main():
     one = lambda s, *a: con.execute(s, list(a)).fetchone()
     sizes = {}
 
-    vintage, data_edit = one("""SELECT vintage, max(data_last_edit) FROM snapshots
-                                WHERE loaded GROUP BY vintage""")
+    vintage, data_edit, fetched = one("""SELECT vintage, max(data_last_edit), max(fetched_at) FROM snapshots
+                                         WHERE loaded GROUP BY vintage""")
     cp_d1 = one("SELECT max(date) FROM chokepoints_daily")[0]
     pt_d1 = one("SELECT max(date) FROM ports_daily")[0]
 
@@ -134,8 +134,9 @@ def main():
     pc_cols = ["portcalls"] + [f"portcalls_{t}" for t in TYPES]
     im_cols = ["import"] + [f"import_{t}" for t in TYPES]
     ex_cols = ["export"] + [f"export_{t}" for t in TYPES]
-    # ports_daily에는 메타 2,065곳 중 1,325곳만 있다(한국 22곳 중 10곳). 있는 항만은 입항 0인 날도 행이 있으나
-    # 혹시 빠진 날은 0으로 채운다. 일별 자료가 없는 항만은 메타만 싣는다(국가 합계에는 포함).
+    # ports_daily에 메타의 모든 항만이 있지는 않을 수 있다(2026-09-15 17:58 UTC 수정 전에는 한국 22곳 중 10곳).
+    # 있는 항만은 입항 0인 날도 행이 있으나 혹시 빠진 날은 0으로 채운다. 일별 자료가 없는 항만은 메타만 싣고
+    # (국가 합계에는 포함), 대시보드는 그 목록을 자료에서 세어 보여 준다.
     events_kor = df("""WITH k AS (SELECT portid FROM ports WHERE ISO3 = ?)
         SELECT d.eventname AS name, d.eventtype AS type, CAST(d.fromdate AS DATE) AS f, CAST(d.todate AS DATE) AS t,
                d.alertlevel AS alert, list(k.portid) AS ports
@@ -196,6 +197,7 @@ def main():
     # ---------- 메타 ----------
     sizes["meta.js"] = write_js(DOCS_DATA / "meta.js", "meta", {
         "vintage": str(vintage),
+        "fetched_at": fetched.strftime("%Y-%m-%d %H:%M UTC") if fetched else None,
         "data_last_edit": data_edit.strftime("%Y-%m-%d %H:%M UTC") if data_edit else None,
         "d0": D0.isoformat(), "cp_d1": str(cp_d1), "pt_d1": str(pt_d1),
         "baseline_years": BASELINE_YEARS, "events": EVENTS,

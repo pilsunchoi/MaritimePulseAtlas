@@ -1,7 +1,7 @@
 """Parquet 스냅샷 -> DuckDB.
 
 가장 최근 스냅샷(또는 --vintage)을 층 이름 그대로의 테이블로 적재한다(원본 열 그대로).
-- snapshots: 스냅샷별·층별 행 수, 서비스 최종 수정 시각, 수집 시각
+- snapshots: 스냅샷별·층별 행 수, 서비스 최종 수정 시각, 수집 시각. vintage는 스냅샷 폴더 이름(UTC 수집 시각)
 - <table>_vintages: 모든 스냅샷을 vintage 열과 함께 읽는 뷰 (시계열 층만). 사후 수정 추적용
 - v_ports_daily: ports_daily + 항만 메타(대륙·위경도·LOCODE)
 
@@ -60,7 +60,7 @@ def main(vintage=None):
         log(f"{t:18s} {n:>10,}행  (vintage {vintage})")
 
     con.execute("""CREATE TABLE snapshots(
-        vintage DATE, tbl VARCHAR, service VARCHAR, rows BIGINT,
+        vintage VARCHAR, tbl VARCHAR, service VARCHAR, rows BIGINT,
         data_last_edit TIMESTAMP, fetched_at TIMESTAMP, loaded BOOLEAN,
         PRIMARY KEY (vintage, tbl))""")
     for v in vs:
@@ -71,7 +71,7 @@ def main(vintage=None):
     glob = RAW.as_posix()
     for t in SERIES:
         con.execute(f"""CREATE OR REPLACE VIEW {t}_vintages AS
-            SELECT CAST(regexp_extract(filename, '(\\d{{4}}-\\d{{2}}-\\d{{2}})/[^/]+$', 1) AS DATE) AS vintage,
+            SELECT regexp_extract(filename, '([^/\\\\]+)[/\\\\][^/\\\\]+$', 1) AS vintage,
                    * EXCLUDE (filename)
             FROM read_parquet('{glob}/*/{t}.parquet', filename = true, union_by_name = true)""")
 
