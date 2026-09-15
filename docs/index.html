@@ -907,7 +907,24 @@ document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () =>
   document.querySelectorAll('.view').forEach(v => v.classList.toggle('on', v.id === 'view-' + t.dataset.view));
   S.tab = t.dataset.view; renderTab();
 }));
-let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(renderTab, 150); });
+// 차트 영역의 크기가 바뀌면 다시 그린다. 창 크기 변경뿐 아니라, 처음 그릴 때 영역이 0이었다가
+// 나중에 커지는 경우(창이 늦게 펼쳐지거나 틀 안에 늦게 배치될 때)도 잡는다. 스토리 그림은 st-f1과 너비가 같다.
+let rz; const rerender = () => { clearTimeout(rz); rz = setTimeout(renderTab, 150); };
+const BOXES = ['cp-box', 'kr-box', 'st-f1'].map(id => document.getElementById(id));
+const lastSize = new Map(BOXES.map(b => [b, [b.clientWidth, b.clientHeight]]));
+if ('ResizeObserver' in window) {
+  const ro = new ResizeObserver(entries => {
+    let changed = false;
+    for (const e of entries) {
+      const w = Math.round(e.contentRect.width), h = Math.round(e.contentRect.height), p = lastSize.get(e.target);
+      if (Math.abs(p[0] - w) > 1 || Math.abs(p[1] - h) > 1) { lastSize.set(e.target, [w, h]); if (w > 0 && h > 0) changed = true; }
+    }
+    if (changed) rerender();
+  });
+  BOXES.forEach(b => ro.observe(b));
+} else {
+  window.addEventListener('resize', rerender);
+}
 renderTab();
 })();
 </script>
