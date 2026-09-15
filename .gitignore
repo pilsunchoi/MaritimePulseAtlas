@@ -1,0 +1,13 @@
+# 원자료 스냅샷·DB는 올리지 않는다
+/data/
+*.duckdb
+*.duckdb.wal
+
+logs/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# 로컬 도구 설정
+.claude/
+CLAUDE.md

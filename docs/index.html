@@ -1,0 +1,913 @@
+<meta charset="utf-8">
+<title>Maritime Pulse Atlas</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#0E1116; --panel:#161B23; --panel2:#1C222C; --ink:#E6E9EF; --ink2:#B4BCC9; --muted:#8F98A8; --line:#262D38; --line2:#343C49;
+  --accent:#5AB4FF; --accent-ink:#0E1116; --warm:#F2B84B; --down:#E0715F; --up:#5AB4FF;
+  --band:rgba(143,152,168,.16); --band-mean:#6B7382;
+  --serif:"Instrument Serif",Georgia,"Times New Roman",serif;
+  --sans:"Instrument Sans","Segoe UI","Malgun Gothic",Helvetica,Arial,sans-serif;
+  --mono:"JetBrains Mono",Consolas,"Courier New",monospace;
+  --fs-0:12px; --fs-1:13.5px; --fs-2:15px;
+}
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:var(--fs-2);line-height:1.45;padding-inline:16px;padding-block:14px}
+a{color:var(--accent)}
+.page{display:flex;flex-direction:column;gap:12px;min-height:calc(100vh - 28px)}
+.topbar{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:10px}
+.brand{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+h1{font-family:var(--serif);font-weight:400;font-size:30px;letter-spacing:-0.01em;margin:0;text-wrap:balance}
+h1 .yrs{color:var(--accent)}
+.eyebrow{font-size:var(--fs-0);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.tabs{display:flex;gap:2px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:2px;flex-wrap:wrap}
+.tab{background:transparent;border:0;color:var(--ink2);font:inherit;font-weight:500;padding:6px 14px;border-radius:4px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--panel2);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line2)}
+.tab:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.view{display:none}
+.view.on{display:contents}
+.app{display:grid;grid-template-columns:268px minmax(0,1fr) 330px;gap:12px;flex:1;min-height:0}
+.rail,.detail{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px;overflow:auto;display:flex;flex-direction:column;gap:14px;min-height:0;max-height:calc(100vh - 110px)}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0}
+label,.lbl{font-size:var(--fs-0);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+select{width:100%;background:var(--panel2);color:var(--ink);border:1px solid var(--line2);border-radius:5px;padding:7px 9px;font:inherit}
+.seg{display:flex;gap:2px;background:var(--panel2);border:1px solid var(--line2);border-radius:5px;padding:2px}
+.seg button{flex:1;background:transparent;border:0;color:var(--ink2);font:inherit;font-size:var(--fs-1);padding:5px 0;border-radius:3px;cursor:pointer;white-space:nowrap}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);font-weight:500}
+.note{font-size:var(--fs-1);color:var(--ink2);margin:0}
+.note.m{color:var(--muted)}
+.stage{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:8px;min-height:560px;overflow:hidden;display:flex;flex-direction:column}
+.kpis{display:flex;gap:22px;flex-wrap:wrap;padding:12px 16px 10px;border-bottom:1px solid var(--line)}
+.kpis .t{font-family:var(--serif);font-size:24px;line-height:1.1;margin-right:auto;min-width:200px}
+.kpis .t small{display:block;font-family:var(--sans);font-size:var(--fs-0);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+.kpi .k{font-size:var(--fs-0);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.kpi .v{font-family:var(--mono);font-size:18px;font-variant-numeric:tabular-nums;color:var(--ink)}
+.kpi .v small{font-size:var(--fs-1);color:var(--ink2);font-family:var(--sans)}
+.dn{color:var(--down)!important} .upc{color:var(--up)!important}
+.legend-inline{display:flex;gap:14px;flex-wrap:wrap;padding:8px 16px 0;font-size:var(--fs-0);color:var(--ink2)}
+.legend-inline .sw{display:inline-block;width:18px;height:3px;border-radius:2px;vertical-align:middle;margin-right:6px}
+.legend-inline .sw.band{height:10px;background:var(--band);border:1px dashed var(--band-mean)}
+.chartbox{position:relative;flex:1;min-height:420px}
+.chartbox svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.tip{position:absolute;pointer-events:none;background:var(--panel2);border:1px solid var(--line2);border-radius:5px;padding:7px 9px;font-size:var(--fs-1);color:var(--ink);white-space:nowrap;display:none;z-index:5}
+.tip b{font-weight:600}
+.tip .m{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--ink2)}
+.loading{position:absolute;inset:0;display:none;align-items:center;justify-content:center;color:var(--muted);background:rgba(14,17,22,.6);z-index:6}
+.loading.on{display:flex}
+.axis text{fill:var(--muted);font-family:var(--mono);font-size:11px}
+.axis path,.axis line{stroke:var(--line2)}
+.grid line{stroke:var(--line);stroke-dasharray:2 3}
+.grid path{display:none}
+.ev line{stroke:var(--warm);stroke-opacity:.7;stroke-dasharray:3 3}
+.ev rect{fill:var(--warm);fill-opacity:.08}
+.ev text{fill:var(--warm);font-size:11px;font-family:var(--sans);paint-order:stroke;stroke:var(--panel);stroke-width:3px}
+.ylab{fill:var(--muted);font-size:11px;font-family:var(--sans)}
+.detail h2{font-family:var(--serif);font-weight:400;font-size:24px;margin:0;line-height:1.1}
+.detail .sub{color:var(--muted);font-size:var(--fs-0);letter-spacing:.06em;text-transform:uppercase}
+.kv{display:grid;grid-template-columns:1fr auto;gap:5px 12px;font-size:var(--fs-1)}
+.kv .k{color:var(--ink2)}
+.kv .v{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right}
+.list{display:flex;flex-direction:column}
+.list .it{display:grid;grid-template-columns:minmax(0,1fr) 84px 58px;align-items:center;gap:8px;font-size:var(--fs-1);padding:4px 6px;border-bottom:1px solid var(--line);cursor:pointer;border-radius:4px;background:transparent;border-left:0;border-right:0;border-top:0;color:inherit;font-family:inherit;text-align:left;width:100%}
+.list .it:hover{background:var(--panel2)}
+.list .it[aria-current="true"]{background:var(--panel2);box-shadow:inset 2px 0 0 var(--accent)}
+.list .n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.list .s{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right}
+.list svg{width:84px;height:22px;display:block}
+.evlist{display:flex;flex-direction:column;gap:6px;font-size:var(--fs-1);color:var(--ink2)}
+.evlist .d{font-family:var(--mono);color:var(--warm);margin-right:6px}
+/* 스토리·정보 */
+.doc{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:20px 24px;width:100%;max-width:1080px;margin-inline:auto}
+.doc .col{max-width:76ch}
+.doc h2{font-family:var(--serif);font-weight:400;font-size:30px;margin:0 0 6px;line-height:1.15}
+.doc h3{font-family:var(--serif);font-weight:400;font-size:22px;margin:22px 0 6px}
+.doc p,.doc li{color:var(--ink2);font-size:var(--fs-2);line-height:1.7}
+.doc p b,.doc li b{color:var(--ink);font-weight:600}
+.doc ul{padding-left:20px}
+.doc .lead{font-size:16px;color:var(--ink2);max-width:76ch}
+.doc code{font-family:var(--mono);font-size:var(--fs-1);color:var(--ink2)}
+.doc .wrap{overflow-x:auto;margin:8px 0}
+.doc table{border-collapse:collapse;font-size:var(--fs-1)}
+.doc th,.doc td{padding:6px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.doc th{color:var(--muted);font-weight:500;font-size:var(--fs-0);letter-spacing:.05em;text-transform:uppercase}
+.big{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:14px 0 6px}
+.big .c{border:1px solid var(--line);border-radius:8px;padding:12px 14px;background:var(--panel2)}
+.big .k{font-size:var(--fs-0);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.big .v{font-family:var(--serif);font-size:34px;line-height:1.1;color:var(--ink)}
+.big .s{font-size:var(--fs-1);color:var(--ink2)}
+.fig{position:relative;height:320px;margin:10px 0 4px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+.fig svg{position:absolute;inset:0;width:100%;height:100%}
+.figcap{font-size:var(--fs-1);color:var(--muted);margin:4px 0 18px}
+.sm{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin:10px 0 4px}
+.sm .cell{border:1px solid var(--line);border-radius:8px;background:var(--bg);padding:8px 10px 4px}
+.sm .cell .h{display:flex;justify-content:space-between;font-size:var(--fs-1);color:var(--ink)}
+.sm .cell .h span{font-family:var(--mono);color:var(--muted)}
+.sm .cell .fig{height:150px;border:0;margin:0;background:transparent}
+.caveat{border-left:2px solid var(--line2);padding-left:12px;color:var(--muted)!important;font-size:var(--fs-1)!important}
+/* 오른쪽 패널: 지구본은 위에 고정, 그 아래만 스크롤 */
+.detail{overflow:hidden}
+.detail-scroll{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:14px;border-top:1px solid var(--line);margin-inline:-14px;padding:12px 14px 0}
+/* 지구본 */
+.globe-box{flex:none;display:flex;flex-direction:column;gap:6px;align-items:center}
+.globe{position:relative;width:100%;max-width:300px;aspect-ratio:1/1}
+.globe canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.globe-cap{display:flex;justify-content:space-between;align-items:baseline;gap:10px;width:100%;max-width:300px;font-size:var(--fs-0);color:var(--muted)}
+.globe-cap b{color:var(--ink);font-weight:500;font-size:var(--fs-1);white-space:nowrap}
+.globe-cap span{font-family:var(--mono);text-align:right}
+@media (max-width:1180px){ .app{grid-template-columns:250px minmax(0,1fr)} .detail{grid-column:1/-1;max-height:none} }
+@media (max-width:820px){
+  .app{grid-template-columns:1fr}
+  .rail{max-height:none}
+  .stage{min-height:0}
+  .chartbox{min-height:340px}
+  h1{font-size:26px}
+  .doc{padding:16px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="page">
+  <div class="topbar">
+    <div class="brand">
+      <h1>Maritime Pulse Atlas <span class="yrs" id="yrs">2019–</span></h1>
+      <span class="eyebrow">해협·운하와 한국 항만의 일별 해상 물동량 · IMF PortWatch (AIS)</span>
+    </div>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-view="cp">해협·운하</button>
+      <button class="tab" role="tab" aria-selected="false" data-view="kr">한국 항만</button>
+      <button class="tab" role="tab" aria-selected="false" data-view="story">호르무즈 × 한국</button>
+      <button class="tab" role="tab" aria-selected="false" data-view="about">정보</button>
+    </div>
+  </div>
+
+  <!-- ===================== 해협·운하 ===================== -->
+  <div class="view on" id="view-cp">
+    <div class="app">
+      <aside class="rail">
+        <div class="field"><label for="cp-sel">해협·운하</label><select id="cp-sel"></select></div>
+        <div class="field"><span class="lbl">지표</span>
+          <div class="seg" data-key="metric" data-scope="cp">
+            <button data-v="n" aria-pressed="true">통과 척수</button><button data-v="cap" aria-pressed="false">통과량(톤)</button>
+          </div></div>
+        <div class="field"><label for="cp-type">선종</label>
+          <select id="cp-type"></select></div>
+        <div class="field"><span class="lbl">보기</span>
+          <div class="seg" data-key="view" data-scope="cp">
+            <button data-v="trend" aria-pressed="true">추이</button><button data-v="season" aria-pressed="false">연도 겹쳐 보기</button>
+          </div></div>
+        <div class="field"><span class="lbl">기간 (추이)</span>
+          <div class="seg" data-key="range" data-scope="cp">
+            <button data-v="all" aria-pressed="false">전체</button><button data-v="3y" aria-pressed="true">3년</button><button data-v="1y" aria-pressed="false">1년</button><button data-v="6m" aria-pressed="false">6개월</button>
+          </div></div>
+        <div class="field"><span class="lbl">이동평균</span>
+          <div class="seg" data-key="ma" data-scope="cp">
+            <button data-v="1" aria-pressed="false">1일</button><button data-v="7" aria-pressed="true">7일</button><button data-v="28" aria-pressed="false">28일</button>
+          </div></div>
+        <div class="field"><span class="lbl">사건</span><div class="evlist" id="cp-ev"></div></div>
+        <p class="note m">회색 띠는 평년 범위: 기준연도(<span class="by"></span>) 같은 날짜의 이동평균 최솟값~최댓값, 점선은 그 평균. 선에 올리면 날짜별 값과 평년 대비가 나온다.</p>
+      </aside>
+      <main class="stage">
+        <div class="kpis" id="cp-kpis"></div>
+        <div class="legend-inline" id="cp-legend"></div>
+        <div class="chartbox" id="cp-box"><svg id="cp-svg" role="img" aria-label="해협 통과 추이"></svg><div class="tip"></div><div class="loading">불러오는 중…</div></div>
+      </main>
+      <aside class="detail">
+        <div class="globe-box">
+          <div class="globe" id="cp-globe"><canvas role="img" aria-label="선택한 해협·운하의 위치를 보여 주는 지구본. 점을 누르면 그 해협을 고른다"></canvas></div>
+          <div class="globe-cap" id="cp-globe-cap"></div>
+        </div>
+        <div class="detail-scroll">
+          <div><div class="sub">28곳 한눈에</div><h2>최근 4주, 평년 대비</h2></div>
+          <p class="note m" id="cp-list-note"></p>
+          <div class="list" id="cp-list"></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- ===================== 한국 항만 ===================== -->
+  <div class="view" id="view-kr">
+    <div class="app">
+      <aside class="rail">
+        <div class="field"><label for="kr-sel">항만</label><select id="kr-sel"></select></div>
+        <div class="field"><span class="lbl">지표</span>
+          <div class="seg" data-key="metric" data-scope="kr">
+            <button data-v="pc" aria-pressed="false">입항</button><button data-v="im" aria-pressed="true">수입(톤)</button><button data-v="ex" aria-pressed="false">수출(톤)</button>
+          </div></div>
+        <div class="field"><label for="kr-type">선종</label><select id="kr-type"></select></div>
+        <div class="field"><span class="lbl">보기</span>
+          <div class="seg" data-key="view" data-scope="kr">
+            <button data-v="trend" aria-pressed="true">추이</button><button data-v="season" aria-pressed="false">연도 겹쳐 보기</button>
+          </div></div>
+        <div class="field"><span class="lbl">기간 (추이)</span>
+          <div class="seg" data-key="range" data-scope="kr">
+            <button data-v="all" aria-pressed="false">전체</button><button data-v="3y" aria-pressed="true">3년</button><button data-v="1y" aria-pressed="false">1년</button><button data-v="6m" aria-pressed="false">6개월</button>
+          </div></div>
+        <div class="field"><span class="lbl">이동평균</span>
+          <div class="seg" data-key="ma" data-scope="kr">
+            <button data-v="1" aria-pressed="false">1일</button><button data-v="7" aria-pressed="false">7일</button><button data-v="28" aria-pressed="true">28일</button>
+          </div></div>
+        <div class="field"><span class="lbl">사건</span><div class="evlist" id="kr-ev"></div></div>
+        <p class="note m">수입·수출은 선박 흘수 변화로 추정한 적재량(톤)이다. 환적 화물이 섞여 있어 부산처럼 환적이 많은 항만은 실제 수출입보다 크게 잡힐 수 있다.</p>
+      </aside>
+      <main class="stage">
+        <div class="kpis" id="kr-kpis"></div>
+        <div class="legend-inline" id="kr-legend"></div>
+        <div class="chartbox" id="kr-box"><svg id="kr-svg" role="img" aria-label="한국 항만 추이"></svg><div class="tip"></div><div class="loading">불러오는 중…</div></div>
+      </main>
+      <aside class="detail">
+        <div class="globe-box">
+          <div class="globe" id="kr-globe"><canvas role="img" aria-label="선택한 한국 항만의 위치를 보여 주는 지구본. 점을 누르면 그 항만을 고른다"></canvas></div>
+          <div class="globe-cap" id="kr-globe-cap"></div>
+        </div>
+        <div class="detail-scroll">
+          <div id="kr-info"></div>
+          <div><div class="sub">한국 항만</div><h2>최근 4주, 평년 대비</h2></div>
+          <p class="note m" id="kr-list-note"></p>
+          <div class="list" id="kr-list"></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- ===================== 호르무즈 × 한국 ===================== -->
+  <div class="view" id="view-story">
+    <div class="doc">
+      <p class="eyebrow">스토리 · 2026</p>
+      <h2>호르무즈 해협 봉쇄는 한국 항만에 어떻게 보이나</h2>
+      <p class="lead" id="st-lead">불러오는 중…</p>
+      <div class="big" id="st-big"></div>
+
+      <h3>1. 호르무즈 해협을 지나는 배</h3>
+      <div class="fig" id="st-f1"><svg></svg><div class="tip"></div></div>
+      <p class="figcap">호르무즈 해협 일별 통과 척수, 7일 이동평균. 파란 선은 전체, 호박색 선은 탱커. 회색 띠는 평년 범위(전체 기준).</p>
+      <p id="st-p1"></p>
+
+      <h3>2. 한국 전체의 탱커 수입</h3>
+      <div class="fig" id="st-f2"><svg></svg><div class="tip"></div></div>
+      <p class="figcap">한국 전 항만의 탱커 수입 추정량(천 톤/일), 28일 이동평균. 점선은 1년 전 같은 날.</p>
+      <p id="st-p2"></p>
+
+      <h3>3. 이웃 나라와 견주면</h3>
+      <div class="fig" id="st-f3"><svg></svg><div class="tip"></div></div>
+      <p class="figcap">월평균 탱커 수입 추정량의 1년 전 같은 달 대비 변화. 파란 굵은 선이 한국. 세로선은 2026년 3월.</p>
+      <p id="st-p3b"></p>
+
+      <h3>4. 탱커 수입이 많은 항만</h3>
+      <div class="sm" id="st-sm"></div>
+      <p class="figcap">항만별 주간 탱커 수입 추정량(천 톤). 파란 선은 올해, 회색 점선은 1년 전 같은 주. 세로선은 2026년 3월 1일.</p>
+      <p id="st-p3"></p>
+
+      <h3>읽을 때 주의할 점</h3>
+      <ul>
+        <li><b>탱커 ≠ 원유.</b> PortWatch의 탱커에는 원유선 외에 석유제품·화학제품 운반선이 섞여 있다. 보령·통영·삼척 LNG 터미널과 여수는 일별 항만 자료가 없어 “한국 전체”에만 들어가고 항만별 그림에는 없다. 또 한국이 탱커로 들여오는 물량에는 호르무즈를 거치지 않는 것(미주·아프리카·동남아 등)도 있다.</li>
+        <li><b>AIS를 끈 배는 안 보인다.</b> 분쟁 해역에서는 GPS 교란과 AIS 위치 조작, 신호를 끈 운항이 보고되어 있어 해협 통과 척수는 실제보다 적게 잡힐 수 있다.</li>
+        <li><b>시차.</b> 페르시아만에서 한국까지 탱커는 약 3주가 걸린다. 해협 통과가 줄어든 효과는 한국 항만에 몇 주 늦게 나타난다.</li>
+        <li><b>추정치다.</b> 적재량은 흘수(선원이 입력)의 변화로 추정하므로 개별 항만·개별 날짜 값에는 잡음이 크다. 추세와 전환점을 보는 용도로 쓴다.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ===================== 정보 ===================== -->
+  <div class="view" id="view-about">
+    <div class="doc"><div class="col">
+      <h3>이 대시보드는</h3>
+      <p>선박자동식별장치(AIS) 신호로 추정한 일별 해상 물동량을 해협·운하 28곳과 한국 항만에 대해 보여 준다. PortWatch의 일별 항만 층에는 한국 항만 22곳 중 10곳(부산·울산·광양·인천·평택·대산·포항·동해·군산·마산)이 있고, 나머지 12곳(여수·제주·LNG 터미널 등)은 “한국 전체”(국가 합계)에만 들어간다. 자료는 IMF와 옥스퍼드대가 만드는 <a href="https://portwatch.imf.org/" target="_blank" rel="noopener">IMF PortWatch</a>이고, 매주 화요일 갱신된다. 이 사이트는 그 자료를 받아 DuckDB에 쌓고, 평년 범위와 비교하는 그림으로 다시 그린다.</p>
+      <div class="wrap"><table>
+        <tr><th>항목</th><th>값</th></tr>
+        <tr><td>자료 수집일</td><td id="ab-vintage"></td></tr>
+        <tr><td>PortWatch 최종 수정</td><td id="ab-edit"></td></tr>
+        <tr><td>해협 자료 끝</td><td id="ab-cp"></td></tr>
+        <tr><td>항만 자료 끝</td><td id="ab-pt"></td></tr>
+        <tr><td>기준연도(평년 범위)</td><td><span class="by"></span> (2020년은 코로나19 급락으로 뺀다)</td></tr>
+      </table></div>
+      <h3>지표</h3>
+      <ul>
+        <li><b>통과 척수</b>: 해협·운하를 지난 선박 수. 탱커와 화물선(컨테이너, 건화물, 일반화물, 로로선)만 센다.</li>
+        <li><b>통과량</b>: 지나간 배가 싣고 있던 화물 추정량(메트릭톤). 선박의 재화중량톤수(DWT)에 흘수로 본 적재율을 곱해 구한다.</li>
+        <li><b>입항</b>: 항만 경계에 들어와 머문 선박 수.</li>
+        <li><b>수입·수출</b>: 입항 전후 흘수 변화로 추정한 하역·선적량(메트릭톤). 컨테이너선의 동시 하역·선적과 평형수는 PortWatch가 보정한다.</li>
+        <li><b>평년 범위</b>: 기준연도 같은 날짜(연도 겹쳐 보기와 같은 달·일)의 이동평균 최솟값~최댓값. 가운데 점선은 평균이고, “평년 대비”는 이 평균에 대한 비율이다.</li>
+        <li><b>최근 4주, 평년 대비</b>: 마지막으로 7일이 다 찬 4주의 합을 기준연도 같은 주들의 평균 합과 비교한다.</li>
+      </ul>
+      <h3>한계</h3>
+      <ul>
+        <li>AIS 추정치는 공식 통계가 아니다. 세계 합계는 공식 무역통계와 잘 맞지만(전년 대비 증가율 상관 0.8~0.95, Arslanalp 외 2025), 개별 항만·국가의 짧은 기간 값은 잡음이 크다.</li>
+        <li>환적 화물이 수출입에 섞인다. AIS를 끄거나 위치를 조작한 선박은 빠진다. 해상 운송만 다룬다.</li>
+        <li>PortWatch는 방법론을 고치면 과거 값도 바꾼다. 이 저장소는 수집일마다 원자료 스냅샷을 남긴다.</li>
+      </ul>
+      <h3>자료와 인용</h3>
+      <p>IMF PortWatch (portwatch.imf.org). AIS 원자료는 UN Global Platform. 방법론: Arslanalp, Koepke, Verschuur (2021) “Tracking Trade from Space”, IMF WP/21/225; Arslanalp 외 (2025) “Nowcasting Global Trade from Space”, IMF WP/25/93. 사건 날짜는 PortWatch 교란 사건 목록(파나마, 홍해, 호르무즈)과 GDACS 태풍 경보를 따른다. 자료 이용은 <a href="https://www.imf.org/external/terms.htm" target="_blank" rel="noopener">IMF 이용 조건</a>을 따른다.</p>
+      <p>짝 사이트: <a href="https://pilsunchoi.github.io/TradeNetworkAtlas/" target="_blank" rel="noopener">Trade Network Atlas</a> — BACI로 본 품목별 세계 교역 네트워크(연 단위).</p>
+    </div></div>
+  </div>
+</div>
+
+<script src="data/meta.js"></script>
+<script src="data/chokepoints.js"></script>
+<script src="data/korea.js"></script>
+<script src="data/land110.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<script>
+(function(){
+const PW = window.__PW, META = PW.meta, CPS = PW.chokepoints, KOR = PW.korea;
+const DAY = 864e5, BY = META.baseline_years;
+const TYPE_KO = {total:'전체', container:'컨테이너', dry_bulk:'건화물(벌크)', general_cargo:'일반화물', roro:'로로선', tanker:'탱커'};
+const iso = d3.utcFormat('%Y-%m-%d');
+const fDate = d3.utcFormat('%Y년 %-m월 %-d일');
+const fMon = d3.utcFormat('%Y.%m');
+const pct = v => v == null ? '–' : (v >= 0 ? '+' : '−') + Math.abs(v * 100).toFixed(Math.abs(v) < .1 ? 1 : 0) + '%';
+const cls = v => v == null ? '' : (v < -0.05 ? 'dn' : v > 0.05 ? 'upc' : '');
+const num = v => v == null ? '–' : (Math.abs(v) >= 100 ? d3.format(',.0f')(v) : Math.abs(v) >= 10 ? d3.format(',.1f')(v) : d3.format(',.2f')(v));
+const parse = s => { const [y, m, d] = s.slice(0, 10).split('-').map(Number); return new Date(Date.UTC(y, m - 1, d)); };
+const axisDates = (d0, n) => { const t0 = parse(d0).getTime(); return Array.from({length: n}, (_, i) => new Date(t0 + i * DAY)); };
+document.querySelectorAll('.by').forEach(e => e.textContent = BY.join('·'));
+document.getElementById('yrs').textContent = '2019–' + META.pt_d1.slice(0, 4);
+
+// ---------- 계산 ----------
+function rolling(v, k) {
+  if (k <= 1) return v.slice();
+  const out = new Array(v.length).fill(null); let s = 0, c = 0;
+  for (let i = 0; i < v.length; i++) {
+    if (v[i] != null) { s += v[i]; c++; }
+    if (i >= k && v[i - k] != null) { s -= v[i - k]; c--; }
+    if (i >= k - 1 && c >= Math.ceil(k / 2)) out[i] = s / c;
+  }
+  return out;
+}
+const mdKey = d => { const m = d.getUTCMonth() + 1; let dd = d.getUTCDate(); if (m === 2 && dd === 29) dd = 28; return m * 100 + dd; };
+function band(x, v) {
+  const by = new Map();
+  x.forEach((d, i) => { if (BY.includes(d.getUTCFullYear()) && v[i] != null) { const k = mdKey(d); (by.get(k) || by.set(k, []).get(k)).push(v[i]); } });
+  const stat = new Map([...by].map(([k, a]) => [k, a.length >= 2 ? {lo: d3.min(a), hi: d3.max(a), mean: d3.mean(a)} : null]));
+  return x.map(d => stat.get(mdKey(d)) || null);
+}
+function lastYear(x, v) {
+  const idx = new Map(x.map((d, i) => [iso(d), i]));
+  return x.map(d => { const p = new Date(Date.UTC(d.getUTCFullYear() - 1, d.getUTCMonth(), Math.min(d.getUTCDate(), d.getUTCMonth() === 1 ? 28 : 31))); const j = idx.get(iso(p)); return j == null ? null : v[j]; });
+}
+function weeklyDev(weeks, vals, n = 4) {
+  if (!vals) return null;
+  const wt = weeks.map(w => w.getTime()), L = weeks.length;
+  let cur = 0, base = 0;
+  for (let i = L - n; i < L; i++) {
+    if (vals[i] == null) return null;
+    cur += vals[i];
+    const a = [];
+    for (const y of BY) {
+      const d = weeks[i], t = Date.UTC(y, d.getUTCMonth(), d.getUTCDate());
+      const j = d3.bisectCenter(wt, t);
+      if (Math.abs(wt[j] - t) <= 4 * DAY && vals[j] != null) a.push(vals[j]);
+    }
+    if (!a.length) return null;
+    base += d3.mean(a);
+  }
+  return base > 0 ? cur / base - 1 : null;
+}
+const meanRange = (x, v, a, b) => { const A = parse(a), B = parse(b); const s = []; x.forEach((d, i) => { if (d >= A && d <= B && v[i] != null) s.push(v[i]); }); return s.length ? d3.mean(s) : null; };
+
+// ---------- 스크립트 지연 로드 ----------
+const pending = {};
+function need(key, src) {
+  if (PW[key]) return Promise.resolve(PW[key]);
+  return pending[key] || (pending[key] = new Promise((res, rej) => {
+    const s = document.createElement('script'); s.src = src;
+    s.onload = () => res(PW[key]); s.onerror = () => rej(new Error('load ' + src));
+    document.head.appendChild(s);
+  }));
+}
+
+// ---------- 그림: 추이 ----------
+function lineChart(box, o) {
+  const svgEl = box.querySelector('svg'), tip = box.querySelector('.tip');
+  const W = box.clientWidth, H = box.clientHeight;
+  const svg = d3.select(svgEl).attr('viewBox', `0 0 ${W} ${H}`); svg.selectAll('*').remove();
+  if (W < 120 || H < 80) return;   // 숨은 탭·배치 전에는 그리지 않는다
+  const m = {t: o.compact ? 10 : 34, r: 14, b: 24, l: o.compact ? 40 : 58};
+  const x = o.x;
+  let i0 = Math.max(0, d3.bisectLeft(x, o.x0)), i1 = Math.min(x.length - 1, d3.bisectRight(x, o.x1) - 1);
+  const I = d3.range(i0, i1 + 1);
+  const xs = d3.scaleUtc([x[i0], x[i1]], [m.l, W - m.r]);
+  let ymax = 0;
+  for (const i of I) { for (const L of o.lines) if (L.v[i] != null) ymax = Math.max(ymax, L.v[i]); if (o.band && o.band[i]) ymax = Math.max(ymax, o.band[i].hi); }
+  const ys = d3.scaleLinear([0, ymax * 1.06 || 1], [H - m.b, m.t]).nice();
+  svg.append('g').attr('class', 'grid').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(ys).ticks(o.compact ? 3 : 6).tickSize(-(W - m.l - m.r)).tickFormat(''));
+  svg.append('g').attr('class', 'axis').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(xs).ticks(Math.max(2, Math.floor(W / 110))).tickSizeOuter(0));
+  svg.append('g').attr('class', 'axis').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(ys).ticks(o.compact ? 3 : 6).tickFormat(d3.format('~s')).tickSizeOuter(0));
+  if (o.ylab && !o.compact) svg.append('text').attr('class', 'ylab').attr('x', m.l).attr('y', m.t - 20).text(o.ylab);
+  // 사건
+  const ev = svg.append('g').attr('class', 'ev');
+  (o.events || []).filter(e => e.d <= x[i1] && (e.t || e.d) >= x[i0]).forEach((e, k) => {
+    const a = xs(e.d < x[i0] ? x[i0] : e.d);
+    if (e.t && e.t > e.d) ev.append('rect').attr('x', a).attr('y', m.t).attr('width', Math.max(1, xs(e.t > x[i1] ? x[i1] : e.t) - a)).attr('height', H - m.b - m.t);
+    ev.append('line').attr('x1', a).attr('x2', a).attr('y1', m.t).attr('y2', H - m.b);
+    if (!o.compact) {
+      const tx = ev.append('text').attr('y', m.t + 13 + (k % 3) * 15).text(e.label);
+      const w = tx.node().getComputedTextLength();
+      tx.attr('x', a + 4 + w > W - m.r ? a - 4 - w : a + 4);
+    }
+  });
+  if (o.band) {
+    const J = I.filter(i => o.band[i]);
+    svg.append('path').attr('fill', 'var(--band)').attr('d', d3.area().defined(i => o.band[i]).x(i => xs(x[i])).y0(i => ys(o.band[i].lo)).y1(i => ys(o.band[i].hi))(I));
+    svg.append('path').attr('fill', 'none').attr('stroke', 'var(--band-mean)').attr('stroke-dasharray', '4 3').attr('stroke-width', 1)
+      .attr('d', d3.line().defined(i => o.band[i]).x(i => xs(x[i])).y(i => ys(o.band[i].mean))(I));
+  }
+  for (const L of o.lines) {
+    svg.append('path').attr('fill', 'none').attr('stroke', L.color).attr('stroke-width', L.w || 1.8).attr('stroke-dasharray', L.dash || null).attr('stroke-linejoin', 'round')
+      .attr('d', d3.line().defined(i => L.v[i] != null).x(i => xs(x[i])).y(i => ys(L.v[i]))(I));
+  }
+  // 올리기
+  const hv = svg.append('g').style('display', 'none');
+  hv.append('line').attr('y1', m.t).attr('y2', H - m.b).attr('stroke', 'var(--line2)');
+  const dots = o.lines.map(L => hv.append('circle').attr('r', 3.5).attr('fill', L.color));
+  svg.append('rect').attr('x', m.l).attr('y', m.t).attr('width', W - m.l - m.r).attr('height', H - m.t - m.b).attr('fill', 'transparent')
+    .on('mouseleave', () => { hv.style('display', 'none'); tip.style.display = 'none'; })
+    .on('mousemove', ev2 => {
+      const [px, py] = d3.pointer(ev2);
+      const i = Math.min(i1, Math.max(i0, d3.bisectCenter(x, xs.invert(px))));
+      const X = xs(x[i]);
+      hv.style('display', null); hv.select('line').attr('x1', X).attr('x2', X);
+      o.lines.forEach((L, k) => dots[k].attr('cx', X).attr('cy', L.v[i] == null ? -99 : ys(L.v[i])));
+      if (o.tip) {
+        tip.innerHTML = o.tip(i); tip.style.display = 'block';
+        const tw = tip.offsetWidth, th = tip.offsetHeight;
+        tip.style.left = (X + 12 + tw > W ? X - 12 - tw : X + 12) + 'px';
+        tip.style.top = Math.min(H - th - 4, Math.max(4, py - th / 2)) + 'px';
+      }
+    });
+}
+
+// ---------- 그림: 연도 겹쳐 보기 ----------
+function seasonChart(box, o) {
+  const svgEl = box.querySelector('svg'), tip = box.querySelector('.tip');
+  const W = box.clientWidth, H = box.clientHeight;
+  const svg = d3.select(svgEl).attr('viewBox', `0 0 ${W} ${H}`); svg.selectAll('*').remove();
+  if (W < 120 || H < 80) return;   // 숨은 탭·배치 전에는 그리지 않는다
+  const m = {t: 34, r: 14, b: 24, l: 58};
+  const ref = d => new Date(Date.UTC(2001, d.getUTCMonth(), d.getUTCMonth() === 1 && d.getUTCDate() === 29 ? 28 : d.getUTCDate()));
+  const xs = d3.scaleUtc([Date.UTC(2001, 0, 1), Date.UTC(2001, 11, 31)], [m.l, W - m.r]);
+  const years = [...new Set(o.x.map(d => d.getUTCFullYear()))];
+  const cur = years[years.length - 1];
+  const ymax = d3.max(o.v) || 1;
+  const ys = d3.scaleLinear([0, ymax * 1.06], [H - m.b, m.t]).nice();
+  const grey = d3.scaleLinear([years[0], cur - 2], ['#3A4250', '#6B7382']);
+  const col = y => y === cur ? 'var(--accent)' : y === cur - 1 ? 'var(--warm)' : grey(y);
+  svg.append('g').attr('class', 'grid').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(ys).ticks(6).tickSize(-(W - m.l - m.r)).tickFormat(''));
+  svg.append('g').attr('class', 'axis').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(xs).ticks(d3.utcMonth.every(W < 560 ? 2 : 1)).tickFormat(d3.utcFormat('%-m월')).tickSizeOuter(0));
+  svg.append('g').attr('class', 'axis').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(ys).ticks(6).tickFormat(d3.format('~s')).tickSizeOuter(0));
+  if (o.ylab) svg.append('text').attr('class', 'ylab').attr('x', m.l).attr('y', m.t - 20).text(o.ylab);
+  const byYear = new Map(years.map(y => [y, []]));
+  o.x.forEach((d, i) => { if (o.v[i] != null) byYear.get(d.getUTCFullYear()).push([ref(d), o.v[i]]); });
+  for (const y of years) {
+    svg.append('path').attr('fill', 'none').attr('stroke', col(y)).attr('stroke-width', y === cur ? 2.4 : y === cur - 1 ? 1.8 : 1.1)
+      .attr('d', d3.line().x(p => xs(p[0])).y(p => ys(p[1]))(byYear.get(y)));
+  }
+  o.legend.innerHTML = years.slice().reverse().map(y => `<span><i class="sw" style="background:${col(y)}"></i>${y}${BY.includes(y) ? '' : y === 2020 ? ' (코로나)' : ''}</span>`).join('');
+  const hv = svg.append('line').attr('y1', m.t).attr('y2', H - m.b).attr('stroke', 'var(--line2)').style('display', 'none');
+  svg.append('rect').attr('x', m.l).attr('y', m.t).attr('width', W - m.l - m.r).attr('height', H - m.t - m.b).attr('fill', 'transparent')
+    .on('mouseleave', () => { hv.style('display', 'none'); tip.style.display = 'none'; })
+    .on('mousemove', ev => {
+      const [px, py] = d3.pointer(ev); const r = xs.invert(px);
+      hv.style('display', null).attr('x1', px).attr('x2', px);
+      const rows = years.slice().reverse().map(y => { const a = byYear.get(y); const j = d3.bisectCenter(a.map(p => p[0].getTime()), r.getTime()); return a[j] ? `<div><span style="color:${col(y)}">■</span> ${y} <span class="m">${num(a[j][1])}</span></div>` : ''; }).join('');
+      tip.innerHTML = `<b>${d3.utcFormat('%-m월 %-d일')(r)}</b>${rows}`; tip.style.display = 'block';
+      const tw = tip.offsetWidth, th = tip.offsetHeight;
+      tip.style.left = (px + 12 + tw > W ? px - 12 - tw : px + 12) + 'px';
+      tip.style.top = Math.min(H - th - 4, Math.max(4, py - th / 2)) + 'px';
+    });
+}
+
+// ---------- 그림: 월별 전년 대비 (나라 비교) ----------
+function monthChart(box, o) {
+  const svgEl = box.querySelector('svg'), tip = box.querySelector('.tip');
+  const W = box.clientWidth, H = box.clientHeight;
+  const svg = d3.select(svgEl).attr('viewBox', `0 0 ${W} ${H}`); svg.selectAll('*').remove();
+  if (W < 120 || H < 80) return;
+  const m = {t: 16, r: 52, b: 24, l: 52};
+  const I = o.months.map((_, i) => i).filter(i => o.months[i] >= o.from);
+  const xs = d3.scalePoint(I, [m.l, W - m.r]);
+  const vals = o.series.flatMap(s => I.map(i => s.v[i])).filter(v => v != null);
+  const lim = Math.max(0.2, d3.max(vals, v => Math.abs(v)));
+  const ys = d3.scaleLinear([-lim, lim], [H - m.b, m.t]).nice();
+  svg.append('g').attr('class', 'grid').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(ys).ticks(6).tickSize(-(W - m.l - m.r)).tickFormat(''));
+  svg.append('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', ys(0)).attr('y2', ys(0)).attr('stroke', 'var(--line2)');
+  const step = W < 560 ? 3 : W < 800 ? 2 : 1;
+  svg.append('g').attr('class', 'axis').attr('transform', `translate(0,${H - m.b})`)
+    .call(d3.axisBottom(xs).tickValues(I.filter((_, k) => k % step === 0)).tickFormat(i => o.months[i].slice(2).replace('-', '.')).tickSizeOuter(0));
+  svg.append('g').attr('class', 'axis').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(ys).ticks(6).tickFormat(d3.format('+.0%')).tickSizeOuter(0));
+  const is = o.months.indexOf(o.shock);
+  if (is >= 0 && xs(is) != null) svg.append('g').attr('class', 'ev').append('line').attr('x1', xs(is)).attr('x2', xs(is)).attr('y1', m.t).attr('y2', H - m.b);
+  for (const s of o.series) {
+    const line = d3.line().defined(i => s.v[i] != null).x(i => xs(i)).y(i => ys(s.v[i]));
+    svg.append('path').attr('fill', 'none').attr('stroke', s.color).attr('stroke-width', s.w || 1.5).attr('d', line(I));
+    const last = I.filter(i => s.v[i] != null).pop();
+    if (last != null) svg.append('text').attr('x', xs(last) + 6).attr('y', ys(s.v[last]) + 4).attr('fill', s.color)
+      .attr('font-size', 12).attr('font-weight', s.w ? 600 : 400).text(s.ko);
+  }
+  const hv = svg.append('line').attr('y1', m.t).attr('y2', H - m.b).attr('stroke', 'var(--line2)').style('display', 'none');
+  svg.append('rect').attr('x', m.l).attr('y', m.t).attr('width', W - m.l - m.r).attr('height', H - m.t - m.b).attr('fill', 'transparent')
+    .on('mouseleave', () => { hv.style('display', 'none'); tip.style.display = 'none'; })
+    .on('mousemove', ev => {
+      const [px, py] = d3.pointer(ev);
+      const i = I.reduce((a, b) => Math.abs(xs(b) - px) < Math.abs(xs(a) - px) ? b : a, I[0]);
+      hv.style('display', null).attr('x1', xs(i)).attr('x2', xs(i));
+      tip.innerHTML = `<b>${o.months[i].replace('-', '년 ')}월</b>` + o.series.slice().reverse().map(s => `<div><span style="color:${s.color}">■</span> ${s.ko} <span class="m">${pct(s.v[i])}</span></div>`).join('');
+      tip.style.display = 'block';
+      const tw = tip.offsetWidth, th = tip.offsetHeight, X = xs(i);
+      tip.style.left = (X + 12 + tw > W ? X - 12 - tw : X + 12) + 'px';
+      tip.style.top = Math.min(H - th - 4, Math.max(4, py - th / 2)) + 'px';
+    });
+}
+
+function spark(vals, dev, n = 104) {
+  const v = vals.slice(-n), W = 84, H = 22;
+  const ys = d3.scaleLinear([0, d3.max(v) || 1], [H - 2, 2]), xs = d3.scaleLinear([0, v.length - 1], [1, W - 1]);
+  const d = d3.line().defined(a => a != null).x((a, i) => xs(i)).y(a => ys(a))(v);
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><path d="${d}" fill="none" stroke="${dev == null ? '#6B7382' : dev < -0.05 ? 'var(--down)' : dev > 0.05 ? 'var(--up)' : '#8F98A8'}" stroke-width="1.3"/></svg>`;
+}
+
+function rangeStart(x, r) {
+  const e = x[x.length - 1];
+  const back = {all: null, '3y': [3, 0], '1y': [1, 0], '6m': [0, 6]}[r];
+  if (!back) return x[0];
+  return new Date(Date.UTC(e.getUTCFullYear() - back[0], e.getUTCMonth() - back[1], e.getUTCDate()));
+}
+
+function kpiHTML(title, sub, x, raw, unit) {
+  const m7 = rolling(raw, 7), b = band(x, m7), ly = lastYear(x, m7);
+  let i = raw.length - 1; while (i > 0 && m7[i] == null) i--;
+  const vb = b[i] ? m7[i] / b[i].mean - 1 : null, vy = ly[i] ? m7[i] / ly[i] - 1 : null;
+  return `<div class="t">${title}<small>${sub}</small></div>
+    <div class="kpi"><div class="k">최근 7일 평균</div><div class="v">${num(m7[i])} <small>${unit}</small></div></div>
+    <div class="kpi"><div class="k">평년 대비</div><div class="v ${cls(vb)}">${pct(vb)}</div></div>
+    <div class="kpi"><div class="k">1년 전 대비</div><div class="v ${cls(vy)}">${pct(vy)}</div></div>
+    <div class="kpi"><div class="k">자료 끝</div><div class="v"><small>${fDate(x[i])}</small></div></div>`;
+}
+
+// ---------- 지구본 ----------
+// 정사영 지구본. 육지·경위선은 회전할 때만 base 캔버스에 다시 그리고, 점과 파동은 매 프레임 덧그린다.
+const REDUCE = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const LANDGEO = {};
+const landGeo = key => LANDGEO[key] || (PW[key] ? (LANDGEO[key] = topojson.feature(PW[key], PW[key].objects.land)) : null);
+const devColor = d => d == null ? '#6B7382' : d < -0.05 ? '#E0715F' : d > 0.05 ? '#5AB4FF' : '#A3ABB8';
+const llText = (lat, lon) => `${Math.abs(lat).toFixed(2)}°${lat >= 0 ? 'N' : 'S'} ${Math.abs(lon).toFixed(2)}°${lon >= 0 ? 'E' : 'W'}`;
+function Globe(wrap, onPick, start) {
+  const cv = wrap.querySelector('canvas'), ctx = cv.getContext('2d');
+  const base = document.createElement('canvas'), bctx = base.getContext('2d');
+  const proj = d3.geoOrthographic().clipAngle(90).precision(0.4), grat = d3.geoGraticule10();
+  const G = {rot: start || [160, -15, 0], k: 1, pts: [], sel: null, tgt: null, pulse: true, label: '', hover: null,
+             land: 'land110', anim: null, size: 0, dirty: true};
+  const t0 = performance.now();
+  const fit = () => {
+    const w = Math.round(wrap.clientWidth); if (w < 40) return false;
+    if (w !== G.size) {
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      G.size = w;
+      for (const [c, x] of [[cv, ctx], [base, bctx]]) { c.width = w * dpr; c.height = w * dpr; x.setTransform(dpr, 0, 0, dpr, 0, 0); }
+      G.dirty = true;
+    }
+    return true;
+  };
+  const R = () => G.size / 2 - 2;
+  const setProj = () => proj.translate([G.size / 2, G.size / 2]).scale(R() * G.k).rotate(G.rot);
+  const center = () => [-G.rot[0], -G.rot[1]];
+  const onFace = p => d3.geoDistance([p.lon, p.lat], center()) < Math.PI / 2 - 0.01;
+  const inDisk = (x, y) => Math.hypot(x - G.size / 2, y - G.size / 2) < R() - 2;
+  function drawBase() {
+    const s = G.size, r = R(); setProj();
+    const path = d3.geoPath(proj, bctx);
+    bctx.clearRect(0, 0, s, s);
+    bctx.save(); bctx.beginPath(); bctx.arc(s / 2, s / 2, r, 0, 2 * Math.PI); bctx.clip();
+    const g = bctx.createRadialGradient(s * .38, s * .33, r * .05, s / 2, s / 2, r);
+    g.addColorStop(0, '#1E2835'); g.addColorStop(1, '#0F141B');
+    bctx.fillStyle = g; bctx.fillRect(0, 0, s, s);
+    bctx.beginPath(); path(grat); bctx.strokeStyle = 'rgba(143,152,168,.12)'; bctx.lineWidth = .6; bctx.stroke();
+    const land = landGeo(G.land) || landGeo('land110');
+    if (land) { bctx.beginPath(); path(land); bctx.fillStyle = '#2F3949'; bctx.fill(); bctx.strokeStyle = '#4A566C'; bctx.lineWidth = .6; bctx.stroke(); }
+    bctx.restore();
+    bctx.beginPath(); bctx.arc(s / 2, s / 2, r, 0, 2 * Math.PI); bctx.strokeStyle = 'rgba(90,180,255,.28)'; bctx.lineWidth = 1.2; bctx.stroke();
+    G.dirty = false;
+  }
+  function label(text, x, y, strong) {
+    ctx.font = `${strong ? 600 : 500} ${strong ? 12.5 : 11.5}px "Instrument Sans","Malgun Gothic",sans-serif`;
+    const w = ctx.measureText(text).width;
+    const lx = x + 9 + w > G.size - 4 ? x - 9 - w : x + 9, ly = y < 18 ? y + 16 : y - 7;
+    ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(14,17,22,.9)'; ctx.strokeText(text, lx, ly);
+    ctx.fillStyle = strong ? '#E6E9EF' : '#B4BCC9'; ctx.fillText(text, lx, ly);
+  }
+  function frame(now) {
+    requestAnimationFrame(frame);
+    if (!wrap.offsetParent || !fit()) return;   // 숨은 탭에서는 쉰다
+    if (G.anim) {
+      const a = G.anim, e = a.dur ? d3.easeCubicInOut(Math.min(1, (now - a.t) / a.dur)) : 1;
+      G.rot = a.ri(e);
+      G.k = a.k0 * Math.pow(a.k1 / a.k0, e) * (1 - a.dip * Math.sin(Math.PI * e));   // 멀리 갈수록 도중에 살짝 멀어졌다 다가간다
+      G.dirty = true;
+      if (e >= 1) G.anim = null;
+    }
+    if (G.dirty) drawBase();
+    const s = G.size;
+    ctx.clearRect(0, 0, s, s); ctx.drawImage(base, 0, 0, s, s);
+    setProj();
+    for (const p of G.pts) {
+      if (p.id === G.sel || !onFace(p)) continue;
+      const [x, y] = proj([p.lon, p.lat]); if (!inDisk(x, y)) continue;
+      ctx.beginPath(); ctx.arc(x, y, p.pick ? 3 : 2, 0, 2 * Math.PI);
+      ctx.fillStyle = p.color; ctx.fill(); ctx.lineWidth = 1; ctx.strokeStyle = '#0E1116'; ctx.stroke();
+    }
+    const t = G.tgt;
+    if (t && G.pulse && onFace(t)) {
+      const [x, y] = proj([t.lon, t.lat]);
+      if (inDisk(x, y)) {
+        const ph = ((now - t0) % 2000) / 2000;
+        for (const q of REDUCE ? [.4] : [ph, (ph + .5) % 1]) {
+          ctx.beginPath(); ctx.arc(x, y, 5 + 18 * q, 0, 2 * Math.PI);
+          ctx.strokeStyle = `rgba(90,180,255,${.85 * (1 - q)})`; ctx.lineWidth = 1.6; ctx.stroke();
+        }
+        ctx.beginPath(); ctx.arc(x, y, 4.5, 0, 2 * Math.PI); ctx.fillStyle = '#5AB4FF'; ctx.fill();
+        ctx.lineWidth = 1.4; ctx.strokeStyle = '#E6E9EF'; ctx.stroke();
+        if (!G.anim && G.label) label(G.label, x, y, true);
+      }
+    }
+    const h = G.hover;
+    if (h && h.id !== G.sel && !G.anim && onFace(h)) { const [x, y] = proj([h.lon, h.lat]); if (inDisk(x, y)) label(h.name, x, y, false); }
+  }
+  requestAnimationFrame(frame);
+  const nearest = ev => {
+    const r = cv.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top;
+    setProj(); let best = null, bd = 12;
+    for (const p of G.pts) { if (!p.pick || !onFace(p)) continue; const [px, py] = proj([p.lon, p.lat]); const d = Math.hypot(px - x, py - y); if (d < bd) { bd = d; best = p; } }
+    return best;
+  };
+  cv.addEventListener('mousemove', ev => { G.hover = nearest(ev); cv.style.cursor = G.hover ? 'pointer' : 'default'; });
+  cv.addEventListener('mouseleave', () => { G.hover = null; });
+  cv.addEventListener('click', ev => { const p = nearest(ev); if (p && onPick) onPick(p.id); });
+  return {
+    target: undefined,
+    points(pts) { G.pts = pts; },
+    land(key) { if (G.land !== key) { G.land = key; G.dirty = true; } },
+    view() { return {rot: G.rot.slice(), k: G.k}; },
+    set(v) { G.rot = v.rot.slice(); G.k = v.k; G.anim = null; G.dirty = true; },
+    flyTo(t, k1, text, pulse = true) {
+      G.sel = t.id || null; G.tgt = t; G.label = text || ''; G.pulse = pulse;
+      const r0 = G.rot.slice(), r1 = [-t.lon, -t.lat, 0];
+      r1[0] = r0[0] + ((r1[0] - r0[0]) % 360 + 540) % 360 - 180;   // 짧은 쪽으로 돈다
+      const dist = d3.geoDistance(center(), [t.lon, t.lat]);
+      const dz = Math.abs(Math.log(k1 / G.k));
+      const dur = REDUCE ? 0 : Math.min(2800, 500 + 1500 * dist / Math.PI + 450 * dz);
+      const dip = REDUCE ? 0 : 0.3 * Math.min(1, dist / (Math.PI / 2));
+      G.anim = {t: performance.now(), dur, ri: d3.interpolate(r0, r1), k0: G.k, k1, dip};
+    }
+  };
+}
+
+// ---------- 공통 상태 ----------
+const S = {
+  cp: {id: 'chokepoint6', metric: 'n', type: 'total', view: 'trend', range: '3y', ma: 7},
+  kr: {id: 'KOR', metric: 'im', type: 'total', view: 'trend', range: '3y', ma: 28},
+  tab: 'cp'
+};
+document.querySelectorAll('.seg').forEach(g => g.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  g.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b));
+  const scope = g.dataset.scope, key = g.dataset.key;
+  S[scope][key] = key === 'ma' ? +b.dataset.v : b.dataset.v;
+  scope === 'cp' ? renderCP() : renderKR();
+}));
+const fillTypes = (sel, scope) => {
+  sel.innerHTML = Object.entries(TYPE_KO).map(([k, v]) => `<option value="${k}">${v}</option>`).join('');
+  sel.onchange = () => { S[scope].type = sel.value; scope === 'cp' ? renderCP() : renderKR(); };
+};
+
+// ================= 해협·운하 =================
+const cpSel = document.getElementById('cp-sel');
+const cpSorted = CPS.list.slice().sort((a, b) => d3.ascending(a.ko, b.ko));
+cpSel.innerHTML = cpSorted.map(c => `<option value="${c.id}">${c.ko}</option>`).join('');
+cpSel.value = S.cp.id;
+cpSel.onchange = () => { S.cp.id = cpSel.value; renderCP(); };
+fillTypes(document.getElementById('cp-type'), 'cp');
+const cpWeeks = CPS.weeks.map(parse);
+
+function renderCPList() {
+  const key = S.cp.metric === 'n' ? 'wk_n' : 'wk_cap';
+  const rows = CPS.list.map(c => ({c, dev: weeklyDev(cpWeeks, c[key])})).sort((a, b) => d3.ascending(a.dev ?? 9, b.dev ?? 9));
+  const L = cpWeeks.length;
+  document.getElementById('cp-list-note').textContent = `${iso(cpWeeks[L - 4])} ~ ${iso(new Date(cpWeeks[L - 1].getTime() + 6 * DAY))} (${S.cp.metric === 'n' ? '통과 척수' : '통과량'}, 전체 선종). 선은 최근 2년 주간 값.`;
+  const el = document.getElementById('cp-list');
+  el.innerHTML = rows.map(({c, dev}) => `<button class="it" data-id="${c.id}" aria-current="${c.id === S.cp.id}"><span class="n">${c.ko}</span>${spark(c[key], dev)}<span class="s ${cls(dev)}">${pct(dev)}</span></button>`).join('');
+  el.onclick = e => { const b = e.target.closest('.it'); if (!b) return; S.cp.id = b.dataset.id; cpSel.value = S.cp.id; renderCP(); };
+  return new Map(rows.map(r => [r.c.id, r.dev]));
+}
+
+async function renderCP() {
+  const box = document.getElementById('cp-box'), ld = box.querySelector('.loading');
+  ld.classList.add('on');
+  const c = await need('cp:' + S.cp.id, `data/cp/${S.cp.id}.js`);
+  ld.classList.remove('on');
+  const x = axisDates(c.d0, c.n.n_total.length);
+  const isN = S.cp.metric === 'n';
+  const key = isN ? (S.cp.type === 'total' ? 'n_total' : 'n_' + S.cp.type) : (S.cp.type === 'total' ? 'capacity' : 'capacity_' + S.cp.type);
+  const raw = isN ? c.n[key] : c.cap[key];
+  const unit = isN ? '척/일' : '천 톤/일';
+  const v = rolling(raw, S.cp.ma), b = band(x, v), ly = lastYear(x, v);
+  const events = META.events.filter(e => e.cps === '*' || e.cps.includes(c.id)).map(e => ({d: parse(e.d), label: e.ko}));
+  document.getElementById('cp-kpis').innerHTML = kpiHTML(c.ko, `${c.name} · ${TYPE_KO[S.cp.type]} · ${isN ? '통과 척수' : '통과량'}`, x, raw, unit);
+  document.getElementById('cp-ev').innerHTML = events.length ? events.map(e => `<div><span class="d">${iso(e.d)}</span>${e.label}</div>`).join('') : '<div class="note m">표시할 사건 없음</div>';
+  const lg = document.getElementById('cp-legend');
+  if (S.cp.view === 'trend') {
+    lg.innerHTML = `<span><i class="sw" style="background:var(--accent)"></i>${S.cp.ma > 1 ? S.cp.ma + '일 이동평균' : '일별'}</span><span><i class="sw band"></i>평년 범위(${BY.join('·')})</span><span><i class="sw" style="background:var(--warm)"></i>사건</span>`;
+    lineChart(box, {x, x0: rangeStart(x, S.cp.range), x1: x[x.length - 1], lines: [{v, color: 'var(--accent)', w: 1.8}], band: b, events, ylab: unit,
+      tip: i => `<b>${fDate(x[i])}</b><div>${num(v[i])} <span class="m">${unit}</span></div><div class="m">평년 ${b[i] ? num(b[i].mean) : '–'} · <span class="${cls(b[i] && v[i] != null ? v[i] / b[i].mean - 1 : null)}">${b[i] && v[i] != null ? pct(v[i] / b[i].mean - 1) : '–'}</span></div><div class="m">1년 전 ${num(ly[i])}</div>`});
+  } else {
+    seasonChart(box, {x, v, ylab: unit + (S.cp.ma > 1 ? ` · ${S.cp.ma}일 이동평균` : ''), legend: lg});
+  }
+  const devs = renderCPList();
+  cpGlobe.points(CPS.list.map(p => ({id: p.id, name: p.ko, lon: p.lon, lat: p.lat, pick: true, color: devColor(devs.get(p.id))})));
+  if (cpGlobe.target !== c.id) {
+    cpGlobe.target = c.id;
+    cpGlobe.flyTo({id: c.id, lon: c.lon, lat: c.lat}, 1, c.ko);
+    document.getElementById('cp-globe-cap').innerHTML = `<b>${c.ko}</b><span>${llText(c.lat, c.lon)}</span>`;
+  }
+}
+
+// ================= 한국 항만 =================
+const krSel = document.getElementById('kr-sel');
+const krPorts = KOR.ports.filter(p => p.wk_im);
+krSel.innerHTML = `<option value="KOR">한국 전체 (국가 합계)</option>` + krPorts.map(p => `<option value="${p.id}">${p.ko}</option>`).join('');
+krSel.onchange = () => { S.kr.id = krSel.value; renderKR(); };
+fillTypes(document.getElementById('kr-type'), 'kr');
+const krWeeks = KOR.weeks.map(parse);
+const M_KO = {pc: '입항', im: '수입', ex: '수출'};
+
+function renderKRList() {
+  const key = {pc: 'wk_pc', im: 'wk_im', ex: 'wk_ex'}[S.kr.metric];
+  const rows = krPorts.filter(p => d3.sum(p[key].slice(-52)) > 0).map(p => ({p, dev: weeklyDev(krWeeks, p[key])}));
+  const L = krWeeks.length;
+  document.getElementById('kr-list-note').textContent = `${iso(krWeeks[L - 4])} ~ ${iso(new Date(krWeeks[L - 1].getTime() + 6 * DAY))} (${M_KO[S.kr.metric]}, 전체 선종). 입항 선박 수가 많은 순.`;
+  const el = document.getElementById('kr-list');
+  el.innerHTML = rows.map(({p, dev}) => `<button class="it" data-id="${p.id}" aria-current="${p.id === S.kr.id}"><span class="n">${p.ko}</span>${spark(p[key], dev)}<span class="s ${cls(dev)}">${pct(dev)}</span></button>`).join('');
+  el.onclick = e => { const b = e.target.closest('.it'); if (!b) return; S.kr.id = b.dataset.id; krSel.value = S.kr.id; renderKR(); };
+  return new Map(rows.map(r => [r.p.id, r.dev]));
+}
+
+function krInfo(p) {
+  const el = document.getElementById('kr-info');
+  if (!p) { el.innerHTML = `<div class="sub">한국 전체</div><h2>국가 합계</h2><p class="note m">PortWatch 국가 일별 층(모든 한국 항만의 합). 항만을 고르면 그 항만의 정보가 여기에 나온다.</p>`; return; }
+  el.innerHTML = `<div class="sub">${p.name}${p.locode ? ' · ' + p.locode : ''}</div><h2>${p.ko}</h2>
+    <div class="kv" style="margin-top:10px">
+      <span class="k">전국 해상 수입 중 비중</span><span class="v">${p.sh_imp != null ? p.sh_imp.toFixed(1) + '%' : '–'}</span>
+      <span class="k">전국 해상 수출 중 비중</span><span class="v">${p.sh_exp != null ? p.sh_exp.toFixed(1) + '%' : '–'}</span>
+      <span class="k">입항 선박 수 (PortWatch 집계)</span><span class="v">${d3.format(',')(p.vessels)}</span>
+      <span class="k">주요 산업</span><span class="v" style="font-family:var(--sans);white-space:normal">${p.industry.join(', ') || '–'}</span>
+    </div>`;
+}
+
+async function renderKR() {
+  const box = document.getElementById('kr-box'), ld = box.querySelector('.loading');
+  let d, meta = null;
+  if (S.kr.id === 'KOR') d = KOR.total;
+  else { ld.classList.add('on'); d = await need('port:' + S.kr.id, `data/port/${S.kr.id}.js`); ld.classList.remove('on'); meta = KOR.ports.find(p => p.id === S.kr.id); }
+  krInfo(meta);
+  const grp = S.kr.metric, base = {pc: 'portcalls', im: 'import', ex: 'export'}[grp];
+  const key = S.kr.type === 'total' ? base : base + '_' + S.kr.type;
+  const raw = d[grp][key], x = axisDates(d.d0, raw.length);
+  const unit = grp === 'pc' ? '척/일' : '천 톤/일';
+  const v = rolling(raw, S.kr.ma), b = band(x, v), ly = lastYear(x, v);
+  const events = META.events.filter(e => e.kor).map(e => ({d: parse(e.d), label: e.ko}))
+    .concat(KOR.events.filter(e => S.kr.id === 'KOR' || e.ports.includes(S.kr.id)).map(e => ({d: parse(e.f), t: e.t ? parse(e.t) : null, label: '태풍 ' + e.name.replace(/-\d+$/, '')})));
+  document.getElementById('kr-kpis').innerHTML = kpiHTML(d.ko, `${TYPE_KO[S.kr.type]} · ${M_KO[grp]}`, x, raw, unit);
+  document.getElementById('kr-ev').innerHTML = events.map(e => `<div><span class="d">${iso(e.d)}</span>${e.label}</div>`).join('') || '<div class="note m">표시할 사건 없음</div>';
+  const lg = document.getElementById('kr-legend');
+  if (S.kr.view === 'trend') {
+    lg.innerHTML = `<span><i class="sw" style="background:var(--accent)"></i>${S.kr.ma > 1 ? S.kr.ma + '일 이동평균' : '일별'}</span><span><i class="sw band"></i>평년 범위(${BY.join('·')})</span><span><i class="sw" style="background:var(--warm)"></i>사건</span>`;
+    lineChart(box, {x, x0: rangeStart(x, S.kr.range), x1: x[x.length - 1], lines: [{v, color: 'var(--accent)'}], band: b, events, ylab: unit,
+      tip: i => `<b>${fDate(x[i])}</b><div>${num(v[i])} <span class="m">${unit}</span></div><div class="m">평년 ${b[i] ? num(b[i].mean) : '–'} · <span class="${cls(b[i] && v[i] != null ? v[i] / b[i].mean - 1 : null)}">${b[i] && v[i] != null ? pct(v[i] / b[i].mean - 1) : '–'}</span></div><div class="m">1년 전 ${num(ly[i])}</div>`});
+  } else {
+    seasonChart(box, {x, v, ylab: unit + (S.kr.ma > 1 ? ` · ${S.kr.ma}일 이동평균` : ''), legend: lg});
+  }
+  const devs = renderKRList();
+  krGlobe.points(KOR.ports.filter(p => p.lat != null).map(p => ({id: p.id, name: p.ko, lon: p.lon, lat: p.lat, pick: !!p.wk_im,
+    color: p.wk_im ? devColor(devs.get(p.id)) : '#4A5260'})));
+  if (krGlobe.target !== S.kr.id) {
+    const all = S.kr.id === 'KOR';
+    if (krGlobe.target === undefined) krGlobe.set({rot: cpGlobe.view().rot, k: 1});   // 처음 열 때: 해협 지구본이 보던 곳에서 한반도로 내려앉는다
+    krGlobe.target = S.kr.id;
+    krGlobe.flyTo(all ? {lon: 127.8, lat: 36.1} : {id: meta.id, lon: meta.lon, lat: meta.lat}, all ? 5.5 : 9, all ? '' : meta.ko, !all);
+    document.getElementById('kr-globe-cap').innerHTML = all
+      ? `<b>한국 전체</b><span>일별 자료 ${krPorts.length}곳 · 회색 점은 자료 없음</span>`
+      : `<b>${meta.ko}</b><span>${llText(meta.lat, meta.lon)}</span>`;
+  }
+  need('land50', 'data/land50.js').then(() => krGlobe.land('land50')).catch(() => {});
+}
+
+// ================= 지구본 인스턴스 =================
+const cpGlobe = Globe(document.getElementById('cp-globe'), id => { S.cp.id = id; cpSel.value = id; renderCP(); });
+const krGlobe = Globe(document.getElementById('kr-globe'), id => { S.kr.id = id; krSel.value = id; renderKR(); });
+
+// ================= 호르무즈 × 한국 =================
+const SHOCK = '2026-03-01', PRE = ['2026-02-01', '2026-02-27'];
+let storyReady = null;
+async function renderStory() {
+  const h = await need('cp:chokepoint6', 'data/cp/chokepoint6.js');
+  const hx = axisDates(h.d0, h.n.n_total.length), hEnd = iso(hx[hx.length - 1]);
+  const nT = rolling(h.n.n_total, 7), nK = rolling(h.n.n_tanker, 7), bT = band(hx, nT);
+  const preN = meanRange(hx, h.n.n_total, ...PRE), postN = meanRange(hx, h.n.n_total, SHOCK, hEnd);
+  const preC = meanRange(hx, h.cap.capacity_tanker, ...PRE), postC = meanRange(hx, h.cap.capacity_tanker, SHOCK, hEnd);
+  const last7 = d3.mean(h.n.n_total.slice(-7));
+
+  const k = KOR.total, kx = axisDates(k.d0, k.im.import_tanker.length), kEnd = iso(kx[kx.length - 1]);
+  const kt = rolling(k.im.import_tanker, 28), kly = lastYear(kx, kt);
+  // 월평균 탱커 수입의 1년 전 같은 달 대비 (국가 층, 다 찬 달만)
+  const P = KOR.peers, PM = P.months;
+  const yoy = tk => PM.map((m, i) => { const j = PM.indexOf((+m.slice(0, 4) - 1) + m.slice(4)); return j >= 0 && tk[i] != null && tk[j] ? tk[i] / tk[j] - 1 : null; });
+  const R = Object.fromEntries(Object.entries(P.series).map(([c, s]) => [c, yoy(s.tk)]));
+  const post = PM.map((_, i) => i).filter(i => PM[i] >= SHOCK.slice(0, 7) && R.KOR[i] != null);
+  const kr = R.KOR, mKo = i => `${+PM[i].slice(5)}월`;
+  const iMar = post[0], iLast = post[post.length - 1];
+  const iTr = post.reduce((a, i) => (a == null || kr[i] < kr[a] ? i : a), null);
+  const after = post.filter(i => i > iTr);
+  const avgR = (c, idx) => { const a = idx.map(i => R[c][i]).filter(v => v != null); return a.length ? d3.mean(a) : null; };
+  const shiftY = (s, n) => (+s.slice(0, 4) + n) + s.slice(4);
+  const a0 = after.length ? PM[after[0]] + '-01' : kEnd;
+  const callsNow = meanRange(kx, k.pc.portcalls_tanker, a0, kEnd), callsLy = meanRange(kx, k.pc.portcalls_tanker, shiftY(a0, -1), shiftY(kEnd, -1));
+  const dbNow = meanRange(kx, k.im.import_dry_bulk, a0, kEnd), dbLy = meanRange(kx, k.im.import_dry_bulk, shiftY(a0, -1), shiftY(kEnd, -1));
+  const dbCh = dbNow / dbLy - 1;
+
+  document.getElementById('st-lead').innerHTML = `2026년 2월 28일 미국·이스라엘의 이란 공습 이후 호르무즈 해협의 선박 통과가 거의 멈췄다. PortWatch의 AIS 추정으로 해협 통과는 2월 하루 평균 <b>${num(preN)}척</b>에서 3월 1일 이후 <b>${num(postN)}척</b>으로 줄었다. 한국은 원유와 LNG의 상당 부분을 페르시아만에서 들여온다. 이 해협의 충격이 한국 항만의 탱커 수입에 어떻게 나타나는지를 PortWatch 자료로 따라가 본다.`;
+  document.getElementById('st-big').innerHTML = `
+    <div class="c"><div class="k">호르무즈 통과 척수</div><div class="v">${num(preN)} → ${num(postN)}</div><div class="s">하루 평균, 2026년 2월 → 3월 1일~${hEnd.slice(5).replace('-', '/')} (<span class="dn">${pct(postN / preN - 1)}</span>)</div></div>
+    <div class="c"><div class="k">호르무즈 탱커 통과량</div><div class="v">${num(preC)} → ${num(postC)}</div><div class="s">천 톤/일, 같은 기간 (<span class="dn">${pct(postC / preC - 1)}</span>)</div></div>
+    <div class="c"><div class="k">한국 탱커 수입 · ${mKo(iTr)} 저점</div><div class="v ${cls(kr[iTr])}">${pct(kr[iTr])}</div><div class="s">1년 전 같은 달 대비, 월평균 ${num(P.series.KOR.tk[iTr])}천 톤/일 (일본 ${pct(R.JPN[iTr])}, 중국 ${pct(R.CHN[iTr])})</div></div>
+    <div class="c"><div class="k">한국 탱커 수입 · 최근 ${mKo(iLast)}</div><div class="v ${cls(kr[iLast])}">${pct(kr[iLast])}</div><div class="s">1년 전 같은 달 대비, 월평균 ${num(P.series.KOR.tk[iLast])}천 톤/일</div></div>`;
+  const preNK = meanRange(hx, h.n.n_tanker, ...PRE), postNK = meanRange(hx, h.n.n_tanker, SHOCK, hEnd);
+  let li = nT.length - 1; while (li > 0 && (nT[li] == null || !bT[li])) li--;
+  const chN = postN / preN - 1, chNK = postNK / preNK - 1;
+  document.getElementById('st-p1').innerHTML = `같은 기간 탱커는 하루 ${num(preNK)}척에서 ${num(postNK)}척으로 <b class="${cls(chNK)}">${pct(chNK)}</b>, 탱커가 아닌 화물선까지 합한 전체는 <b class="${cls(chN)}">${pct(chN)}</b> 달라졌다. 최근 7일 평균은 하루 ${num(nT[li])}척으로 평년(${BY.join('·')}년 같은 날짜) 평균 ${num(bT[li].mean)}척의 ${Math.round(nT[li] / bT[li].mean * 100)}% 수준이다. 통과가 멈춘 뒤에도 0이 아닌 척수가 잡히는 것은 해협 안쪽 항만 사이의 운항이나 AIS 신호를 켜 둔 일부 선박 때문일 수 있다.`;
+  const nUp = after.filter(i => kr[i] > 0).length;
+  document.getElementById('st-p2').innerHTML =
+    `해협 통과가 멈춘 ${mKo(iMar)}에 한국의 탱커 수입은 1년 전 같은 달보다 ${pct(kr[iMar])}였다. 페르시아만에서 한국까지 탱커로 약 3주가 걸려 충격은 늦게 도착한다. ` +
+    (iTr !== iMar ? `${mKo(iTr)}에 <b class="${cls(kr[iTr])}">${pct(kr[iTr])}</b>로 저점을 찍었다. ` : '') +
+    (!after.length ? '' : nUp > after.length / 2
+      ? `그 뒤로는 반등해 ${after.map(i => `${mKo(i)} ${pct(kr[i])}`).join(', ')}로 1년 전보다 많은 달이 더 많다. 탱커 입항 척수도 ${mKo(after[0])} 이후 하루 평균 ${num(callsNow)}척으로 1년 전 같은 기간(${num(callsLy)}척)보다 ${pct(callsNow / callsLy - 1)}이다. 해협이 거의 닫혀 있는 동안의 반등이므로 페르시아만 밖에서 들여온 물량이 늘었을 가능성이 있다.`
+      : `그 뒤로도 ${after.map(i => `${mKo(i)} ${pct(kr[i])}`).join(', ')}로 대체로 1년 전 수준을 밑돈다.`);
+  const peersTr = ['JPN', 'CHN', 'TWN', 'IND'].filter(c => R[c][iTr] != null && R[c][iTr] < -0.1).length;
+  document.getElementById('st-p3b').innerHTML =
+    `${mKo(iTr)}에 일본은 ${pct(R.JPN[iTr])}, 중국은 ${pct(R.CHN[iTr])}, 대만은 ${pct(R.TWN[iTr])}, 인도는 ${pct(R.IND[iTr])}였다. ` +
+    (peersTr >= 2 ? `저점이 여러 나라에 함께 나타나 해협 봉쇄의 영향으로 읽힌다. ` : `이웃 나라의 같은 달 변화는 한국과 달라 한국의 저점을 해협 봉쇄만으로 설명하기는 어렵다. `) +
+    (after.length ? `그 뒤(${mKo(after[0])}~${mKo(iLast)}) 평균은 한국 ${pct(avgR('KOR', after))}, 일본 ${pct(avgR('JPN', after))}, 중국 ${pct(avgR('CHN', after))}, 대만 ${pct(avgR('TWN', after))}, 인도 ${pct(avgR('IND', after))}로 나라마다 갈린다. ` : '') +
+    (after.length && dbCh > 0.2 ? `다만 한국의 반등은 조심해서 읽어야 한다. 같은 기간 한국의 건화물(벌크) 수입도 1년 전보다 ${pct(dbCh)} 많아, 도입선 전환이나 비축 같은 실제 변화 외에 한국 항만 AIS 자료(흘수 입력 등)의 변화가 섞였을 가능성을 배제할 수 없다.` : '');
+  const st = {hx, nT, nK, bT, kx, kt, kly, R, PM, iTr};
+  const smPorts = KOR.ports.filter(p => p.wk_imt).map(p => ({p, s: d3.sum(p.wk_imt.slice(-104, -52))})).sort((a, b) => b.s - a.s).slice(0, 6).map(a => a.p);
+  st.sm = smPorts;
+  document.getElementById('st-p3').innerHTML = `탱커 수입이 많은 여섯 항만(${smPorts.map(p => p.ko).join(', ')})을 1년 전과 나란히 놓았다(2024년 9월~2025년 8월 탱커 수입 기준). 항만마다 들여오는 품목과 도입선이 달라 봉쇄 이후의 흐름도 다르게 나타날 수 있다. 일별 항만 자료가 없는 여수와 LNG 터미널은 여기에 없다.`;
+  document.getElementById('st-sm').innerHTML = smPorts.map(p => `<div class="cell"><div class="h">${p.ko}<span>천 톤/주</span></div><div class="fig" data-id="${p.id}"><svg></svg><div class="tip"></div></div></div>`).join('');
+  return st;
+}
+function drawStory(st) {
+  const e0 = [{d: parse('2026-02-28'), label: '2/28 이란 공습'}];
+  lineChart(document.getElementById('st-f1'), {x: st.hx, x0: parse('2025-09-01'), x1: st.hx[st.hx.length - 1], band: st.bT, events: e0, ylab: '척/일',
+    lines: [{v: st.nT, color: 'var(--accent)'}, {v: st.nK, color: 'var(--warm)'}],
+    tip: i => `<b>${fDate(st.hx[i])}</b><div>전체 <span class="m">${num(st.nT[i])}</span></div><div>탱커 <span class="m">${num(st.nK[i])}</span></div><div class="m">평년 ${st.bT[i] ? num(st.bT[i].mean) : '–'}</div>`});
+  lineChart(document.getElementById('st-f2'), {x: st.kx, x0: parse('2025-06-01'), x1: st.kx[st.kx.length - 1], ylab: '천 톤/일',
+    events: [{d: parse('2026-02-28'), label: '2/28 이란 공습'}],
+    lines: [{v: st.kly, color: '#6B7382', dash: '4 3', w: 1.4}, {v: st.kt, color: 'var(--accent)'}],
+    tip: i => `<b>${fDate(st.kx[i])}</b><div>탱커 수입 <span class="m">${num(st.kt[i])}</span></div><div class="m">1년 전 ${num(st.kly[i])}</div>`});
+  monthChart(document.getElementById('st-f3'), {months: st.PM, from: '2025-07', shock: SHOCK.slice(0, 7), series: [
+    {c: 'CHN', ko: '중국', v: st.R.CHN, color: '#C95A4B'}, {c: 'JPN', ko: '일본', v: st.R.JPN, color: '#8F62D8'},
+    {c: 'TWN', ko: '대만', v: st.R.TWN, color: '#1F9C90'}, {c: 'IND', ko: '인도', v: st.R.IND, color: '#B8862A'},
+    {c: 'KOR', ko: '한국', v: st.R.KOR, color: 'var(--accent)', w: 2.8}]});
+  const wx = krWeeks;
+  document.querySelectorAll('#st-sm .fig').forEach(f => {
+    const p = KOR.ports.find(q => q.id === f.dataset.id);
+    const ly = wx.map((w, i) => { const t = w.getTime() - 364 * DAY; const j = d3.bisectCenter(wx.map(a => a.getTime()), t); return Math.abs(wx[j] - t) < DAY ? p.wk_imt[j] : null; });
+    lineChart(f, {x: wx, x0: parse('2025-06-01'), x1: wx[wx.length - 1], compact: true, events: [{d: parse(SHOCK)}],
+      lines: [{v: ly, color: '#6B7382', dash: '3 3', w: 1.2}, {v: p.wk_imt, color: 'var(--accent)', w: 1.6}],
+      tip: i => `<b>${iso(wx[i])} 주</b><div>${num(p.wk_imt[i])} <span class="m">천 톤</span></div><div class="m">1년 전 ${num(ly[i])}</div>`});
+  });
+}
+
+// ================= 정보 =================
+document.getElementById('ab-vintage').textContent = META.vintage;
+document.getElementById('ab-edit').textContent = META.data_last_edit || '–';
+document.getElementById('ab-cp').textContent = META.cp_d1;
+document.getElementById('ab-pt').textContent = META.pt_d1;
+
+// ================= 탭·크기 =================
+async function renderTab() {
+  if (S.tab === 'cp') renderCP();
+  else if (S.tab === 'kr') renderKR();
+  else if (S.tab === 'story') { storyReady = storyReady || renderStory(); drawStory(await storyReady); }
+}
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+  document.querySelectorAll('.tab').forEach(x => x.setAttribute('aria-selected', x === t));
+  document.querySelectorAll('.view').forEach(v => v.classList.toggle('on', v.id === 'view-' + t.dataset.view));
+  S.tab = t.dataset.view; renderTab();
+}));
+let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(renderTab, 150); });
+renderTab();
+})();
+</script>

@@ -1,0 +1,38 @@
+# PortWatch는 매주 화요일 09:00(미 동부) 갱신된다. 그 뒤 수집·검증·자료 생성을 돌려 docs/data를 커밋한다.
+# 원자료 스냅샷(Parquet)은 저장소에 넣지 않고 워크플로 산출물로 90일 보관한다.
+name: weekly-update
+
+on:
+  schedule:
+    - cron: "30 16 * * 2"   # 화요일 16:30 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install duckdb pandas pyarrow requests
+      - run: python scripts/01_fetch_portwatch.py
+      - run: python scripts/02_build_db.py
+      - run: python scripts/05_validate.py
+      - run: python scripts/10_export_site_data.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: portwatch-snapshot-${{ github.run_id }}
+          path: data/raw/portwatch/
+          retention-days: 90
+      - name: commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add docs/data
+          git diff --cached --quiet || git commit -m "data: PortWatch $(date -u +%Y-%m-%d)"
+          git push
