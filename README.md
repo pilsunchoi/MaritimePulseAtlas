@@ -44,6 +44,15 @@ python scripts/10_export_site_data.py         # docs/data/*.js
 python scripts/11_fetch_land.py               # 지구본 육지 윤곽 docs/data/land110.js·land50.js (한 번만)
 ```
 
+### 로컬 주간 스냅샷 (Windows 작업 스케줄러)
+
+사이트는 GitHub Actions가 매주 갱신하지만, 그쪽 스냅샷은 90일만 보관된다. 사후 수정 기록을 오래 쌓으려고 로컬에서도 매주 받는다.
+
+- 작업: `\MaritimePulseAtlas\Weekly PortWatch snapshot`. 매주 수요일 09:00(한국 시간), 놓치면 PC를 켠 뒤 바로, 네트워크가 있을 때만 돈다. 로그인한 동안에만 실행한다(비밀번호를 저장하지 않는다).
+- 하는 일: `scripts/weekly_local.py`가 창 없이(`pythonw.exe`) 01 수집 → 02 DuckDB → 05 검증을 차례로 돌린다. 사이트 자료(10)는 만들지 않는다. 기록은 `logs/weekly_local.log`.
+- 용량: 스냅샷 하나가 약 140MB라 한 해에 약 7GB가 쌓인다. 필요 없는 스냅샷 폴더는 지워도 되며, DB는 다음 실행 때 남은 스냅샷으로 다시 만들어진다.
+- 멈추기·지우기: 작업 스케줄러에서 사용 안 함으로 바꾸거나, PowerShell에서 `Unregister-ScheduledTask -TaskPath '\MaritimePulseAtlas\' -TaskName 'Weekly PortWatch snapshot'`.
+
 대시보드를 로컬에서 보려면:
 
 ```
