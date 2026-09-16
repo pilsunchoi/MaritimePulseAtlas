@@ -20,6 +20,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from config.settings import DB_PATH, DOCS_DATA, KOR, BASELINE_YEARS
 import duckdb
+import numpy as np
 import pandas as pd
 
 D0 = dt.date(2019, 1, 1)
@@ -87,6 +88,134 @@ def weekly(df, cols, d1, scale=None, nd=0):
     if scale:
         agg = agg / scale
     return [d.strftime("%Y-%m-%d") for d in agg.index], {c: [clean(v, nd) for v in agg[c].tolist()] for c in cols}
+
+
+# ---------- 세계 지도·국가 비교: 주 합과 4주 창의 평년 대비 ----------
+# 편차를 10% 단위로 줄여 한 글자로 싣는다. A=-100%, K=0%, e=+200%(이상). 자료가 적어 계산하지 않은 주는 '.'
+ALPH = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcde"
+KO_COUNTRY = {
+    "WLD": "세계", "110": "선진국", "119": "G7", "123": "기타 선진국", "163": "유로 지역", "998": "유럽연합",
+    "200": "신흥·개발도상국", "205": "중남미·카리브", "400": "중동·중앙아시아", "505": "신흥·개발도상 아시아",
+    "510": "ASEAN-5", "511": "아시아 선진국(일본 제외)", "512": "아시아 신흥국(중국 제외)", "513": "ASEAN-10",
+    "603": "사하라 이남 아프리카", "903": "신흥·개발도상 유럽",
+    "KOR": "한국", "CHN": "중국", "JPN": "일본", "USA": "미국", "TWN": "대만", "HKG": "홍콩", "IDN": "인도네시아",
+    "SGP": "싱가포르", "MYS": "말레이시아", "VNM": "베트남", "THA": "태국", "PHL": "필리핀", "IND": "인도",
+    "PAK": "파키스탄", "BGD": "방글라데시", "LKA": "스리랑카", "MMR": "미얀마", "KHM": "캄보디아", "BRN": "브루나이",
+    "PRK": "북한", "AUS": "호주", "NZL": "뉴질랜드", "PNG": "파푸아뉴기니", "FJI": "피지",
+    "NLD": "네덜란드", "DEU": "독일", "GBR": "영국", "FRA": "프랑스", "ITA": "이탈리아", "ESP": "스페인",
+    "PRT": "포르투갈", "BEL": "벨기에", "GRC": "그리스", "NOR": "노르웨이", "SWE": "스웨덴", "DNK": "덴마크",
+    "FIN": "핀란드", "POL": "폴란드", "IRL": "아일랜드", "ISL": "아이슬란드", "EST": "에스토니아", "LVA": "라트비아",
+    "LTU": "리투아니아", "ROU": "루마니아", "BGR": "불가리아", "HRV": "크로아티아", "SVN": "슬로베니아",
+    "MLT": "몰타", "CYP": "키프로스", "MNE": "몬테네그로", "ALB": "알바니아", "UKR": "우크라이나", "RUS": "러시아",
+    "GEO": "조지아", "TUR": "튀르키예", "KAZ": "카자흐스탄", "AZE": "아제르바이잔", "TKM": "투르크메니스탄",
+    "SAU": "사우디아라비아", "ARE": "아랍에미리트", "IRN": "이란", "IRQ": "이라크", "KWT": "쿠웨이트", "QAT": "카타르",
+    "OMN": "오만", "BHR": "바레인", "YEM": "예멘", "ISR": "이스라엘", "JOR": "요르단", "LBN": "레바논", "SYR": "시리아",
+    "EGY": "이집트", "LBY": "리비아", "TUN": "튀니지", "DZA": "알제리", "MAR": "모로코", "SDN": "수단", "DJI": "지부티",
+    "KEN": "케냐", "TZA": "탄자니아", "MOZ": "모잠비크", "MDG": "마다가스카르", "MUS": "모리셔스", "ZAF": "남아프리카공화국",
+    "AGO": "앙골라", "NGA": "나이지리아", "GHA": "가나", "CIV": "코트디부아르", "SEN": "세네갈",
+    "CAN": "캐나다", "MEX": "멕시코", "PAN": "파나마", "CUB": "쿠바", "JAM": "자메이카", "DOM": "도미니카공화국",
+    "BRA": "브라질", "ARG": "아르헨티나", "CHL": "칠레", "PER": "페루", "COL": "콜롬비아", "ECU": "에콰도르",
+    "URY": "우루과이", "VEN": "베네수엘라",
+}
+
+
+def weekly_sum(daily, d1):
+    """date 인덱스 × 개체 일별 값 -> 월요일 시작 주 합(7일이 다 찬 주만)."""
+    daily = daily.reindex(pd.date_range(D0, d1, freq="D"))
+    s = daily.resample("W-MON", label="left", closed="left").sum(min_count=1)
+    return s[(s.index >= pd.Timestamp(D0)) & (s.index + pd.Timedelta(days=6) <= pd.Timestamp(d1))]
+
+
+def dev4(W, min_base):
+    """주 × 개체 합 W -> 4주 창 합의 평년 대비 편차(주 × 개체)와 평년 값.
+    평년은 기준연도마다 같은 달·일에 가장 가까운 주(±4일)의 4주 창 합을 평균한 것.
+    평년 값이 min_base보다 작으면(작은 항만·나라의 잡음) 편차를 비워 둔다."""
+    R = W.rolling(4, min_periods=4).sum().to_numpy(dtype=float)
+    weeks = W.index
+    t = weeks.values.astype("datetime64[D]").astype(np.int64)
+    acc, cnt = np.zeros_like(R), np.zeros_like(R)
+    for y in BASELINE_YEARS:
+        tg = np.array([np.datetime64(dt.date(y, w.month, min(w.day, 28) if w.month == 2 else w.day), "D")
+                       for w in weeks]).astype(np.int64)
+        j = np.clip(np.searchsorted(t, tg), 1, len(t) - 1)
+        j = np.where(np.abs(t[j - 1] - tg) < np.abs(t[j] - tg), j - 1, j)
+        v = R[j].copy()
+        v[np.abs(t[j] - tg) > 4] = np.nan
+        ok = ~np.isnan(v)
+        acc += np.where(ok, v, 0)
+        cnt += ok
+    B = np.where(cnt > 0, acc / np.maximum(cnt, 1), np.nan)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        D = np.where(B >= min_base, R / B - 1, np.nan)
+    return D, B
+
+
+def encode(col):
+    out = []
+    for v in col:
+        out.append("." if np.isnan(v) else ALPH[int(np.clip(np.round(v * 10), -10, 20)) + 10])
+    return "".join(out)
+
+
+def export_world(con, d1, sizes):
+    """세계 항만 지도: 항만 2,065곳 × 주, 4주 창 평년 대비를 글자로. 입항(pc)과 물동량(vol, 수입+수출) 두 층."""
+    meta = con.execute("""SELECT portid, portname, country, ISO3, round(lat, 3) AS lat, round(lon, 3) AS lon
+                          FROM ports ORDER BY portid""").df()
+    d = con.execute("""SELECT date, portid, portcalls AS pc, "import" + export AS vol FROM ports_daily""").df()
+    d["date"] = pd.to_datetime(d["date"])
+    w = con.execute("""SELECT date, portcalls AS pc, "import" + export AS vol FROM country_daily WHERE ISO3 = 'WLD'""").df()
+    w["date"] = pd.to_datetime(w["date"])
+    layers, weeks = {}, None
+    for m, min_base in [("pc", 8), ("vol", 40_000)]:      # 4주에 입항 8척(주 2척), 물동량 4만 톤 미만은 계산하지 않는다
+        W = weekly_sum(d.pivot(index="date", columns="portid", values=m), d1)[meta["portid"]].fillna(0)
+        D, _ = dev4(W, min_base)
+        weeks = W.index
+        size = W.iloc[-52:].mean()                          # 점 크기: 최근 52주 주평균
+        WW = weekly_sum(w.set_index("date")[[m]], d1)
+        DW, _ = dev4(WW, 0)
+        layers[m] = {"size": [clean(v / (1 if m == "pc" else 1000), 1) for v in size.tolist()],
+                     "dev": [encode(D[:, k]) for k in range(D.shape[1])],
+                     "world": [clean(v, 3) for v in DW[:, 0].tolist()]}
+    ports = [[r.portid, PORT_KO.get(r.portname, r.portname), KO_COUNTRY.get(r.ISO3, r.country), r.ISO3, r.lat, r.lon]
+             for r in meta.itertuples()]
+    base = {"weeks": [x.strftime("%Y-%m-%d") for x in weeks], "alph": ALPH, "ports": ports}
+    sizes["world.js"] = write_js(DOCS_DATA / "world.js", "world", {**base, "pc": layers["pc"]})
+    sizes["world_vol.js"] = write_js(DOCS_DATA / "world_vol.js", "world:vol", layers["vol"])
+    return len(ports), len(weeks)
+
+
+def export_countries(con, d1, sizes):
+    """국가 비교: 국가·권역 196개. 개관(countries.js)과 나라별 주간·월간 자료(country/<ISO3>.js)."""
+    c = con.execute("""SELECT date, ISO3, country, portcalls AS pc, "import" / 1000 AS im, export / 1000 AS ex
+                       FROM country_daily""").df()
+    c["date"] = pd.to_datetime(c["date"])
+    names = c.groupby("ISO3")["country"].first()
+    ids = sorted(names.index)
+    W = {m: weekly_sum(c.pivot(index="date", columns="ISO3", values=m), d1)[ids] for m in ("pc", "im", "ex")}
+    weeks = W["pc"].index
+    D = {m: dev4(W[m], mb)[0] for m, mb in (("pc", 8), ("im", 10), ("ex", 10))}   # im·ex는 천 톤
+    tn = con.execute("""SELECT ISO3, strftime(date, '%Y-%m') AS m, value_import_total AS v_im, value_export_total AS v_ex,
+                               volume_import_total AS q_im, volume_export_total AS q_ex, trade_value AS v, trade_volume AS q
+                        FROM trade_monthly ORDER BY m""").df()
+    months = sorted(tn["m"].unique())
+    lst = []
+    for k, iso in enumerate(ids):
+        agg = iso == "WLD" or not iso.isalpha()
+        rec = {"id": iso, "name": names[iso], "ko": KO_COUNTRY.get(iso, names[iso]), "agg": agg,
+               "pc_day": clean(W["pc"][iso].iloc[-52:].mean() / 7, 1)}
+        rec["dev"] = {m: clean(D[m][-1, k], 3) for m in W}
+        rec["spark"] = {m: [clean(v, 0) for v in W[m][iso].iloc[-104:].tolist()] for m in W}
+        lst.append(rec)
+        t = tn[tn.ISO3 == iso].set_index("m").reindex(months)
+        sizes[f"country/{iso}.js"] = write_js(DOCS_DATA / "country" / f"{iso}.js", f"country:{iso}", {
+            "id": iso, "name": names[iso], "ko": rec["ko"],
+            **{m: [clean(v, 0 if m == "pc" else 1) for v in W[m][iso].tolist()] for m in W},
+            "dev": {m: [clean(v, 3) for v in D[m][:, k].tolist()] for m in W},
+            "tn": {"months": months, **{col: [clean(v, 1) for v in t[col].tolist()]
+                                         for col in ("v_im", "v_ex", "q_im", "q_ex", "v", "q")}}})
+    sizes["countries.js"] = write_js(DOCS_DATA / "countries.js", "countries",
+                                     {"weeks": [x.strftime("%Y-%m-%d") for x in weeks], "list": lst})
+    return len(ids)
 
 
 def write_js(path, key, obj):
@@ -194,6 +323,10 @@ def main():
                                  {"weeks": kweeks, "ports": port_list, "total": kor_total, "events": ev,
                                   "peers": peers})
 
+    # ---------- 세계 항만 지도·국가 비교 ----------
+    n_ports, n_weeks = export_world(con, pt_d1, sizes)
+    n_countries = export_countries(con, pt_d1, sizes)
+
     # ---------- 메타 ----------
     sizes["meta.js"] = write_js(DOCS_DATA / "meta.js", "meta", {
         "vintage": str(vintage),
@@ -201,11 +334,15 @@ def main():
         "data_last_edit": data_edit.strftime("%Y-%m-%d %H:%M UTC") if data_edit else None,
         "d0": D0.isoformat(), "cp_d1": str(cp_d1), "pt_d1": str(pt_d1),
         "baseline_years": BASELINE_YEARS, "events": EVENTS,
-        "types": TYPES})
+        "types": TYPES,
+        # 정보 탭이 자료에서 세어 보여 주는 규모(PortWatch가 범위를 바꾸면 달라진다)
+        "n_ports": n_ports, "n_chokepoints": len(cps), "n_countries": n_countries, "n_weeks": n_weeks})
 
     con.close()
     total = sum(sizes.values())
-    for k in ["meta.js", "chokepoints.js", "korea.js"]:
+    n_ct = sum(1 for k in sizes if k.startswith("country/"))
+    print(f"country/*.js {n_ct}개  {sum(v for k, v in sizes.items() if k.startswith('country/')) / 1e6:6.2f} MB")
+    for k in ["meta.js", "chokepoints.js", "korea.js", "world.js", "world_vol.js", "countries.js"]:
         print(f"{k:22s} {sizes[k] / 1e3:8.1f} KB")
     n_cp = sum(1 for k in sizes if k.startswith("cp/"))
     n_pt = sum(1 for k in sizes if k.startswith("port/"))

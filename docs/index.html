@@ -106,6 +106,61 @@ select{width:100%;background:var(--panel2);color:var(--ink);border:1px solid var
 .sm .cell .h span{font-family:var(--mono);color:var(--muted)}
 .sm .cell .fig{height:150px;border:0;margin:0;background:transparent}
 .caveat{border-left:2px solid var(--line2);padding-left:12px;color:var(--muted)!important;font-size:var(--fs-1)!important}
+/* 정보(연구) 탭 — 소개 카드. 본문은 GitHub의 Markdown 문서에 있다 */
+.research{display:flex;flex-direction:column;gap:14px;width:100%;max-width:1080px;margin-inline:auto}
+.research-head{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:20px 24px}
+.research-head .h2{font-family:var(--serif);font-weight:400;font-size:30px;margin:0 0 6px}
+.research-head .lead{color:var(--ink2);font-size:var(--fs-2);margin:0 0 8px;max-width:78ch;line-height:1.65}
+.research-head .note{color:var(--muted);font-size:var(--fs-1);margin:0;max-width:78ch;border-left:2px solid var(--line2);padding-left:12px;line-height:1.6}
+.status{display:flex;flex-wrap:wrap;gap:8px 26px;margin-top:16px;border-top:1px solid var(--line);padding-top:12px}
+.status div{display:flex;flex-direction:column;gap:2px}
+.status .k{font-size:var(--fs-0);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.status .v{font-family:var(--mono);font-size:var(--fs-1);font-variant-numeric:tabular-nums;color:var(--ink2)}
+.mono-card{display:grid;grid-template-columns:64px minmax(0,1fr);gap:18px;border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:22px 24px}
+.mono-num{font-family:var(--serif);font-size:46px;line-height:1;color:var(--accent)}
+.mono-body>:first-child{margin-top:0}
+.mono-chlabel{font-size:var(--fs-0);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:2px 0 4px}
+.mono-chtitle{font-family:var(--serif);font-weight:400;font-size:26px;line-height:1.2;margin:0 0 6px;color:var(--ink);text-wrap:balance}
+.mono-chsub{color:var(--muted);margin:0 0 14px;font-size:var(--fs-1);max-width:80ch;line-height:1.6}
+.mono-desc{margin:0 0 12px;color:var(--ink2);line-height:1.7;font-size:var(--fs-2);max-width:80ch}
+.mono-desc b{color:var(--ink);font-weight:600}
+.mono-bullets{padding-left:20px;margin:0 0 16px;max-width:80ch}
+.mono-bullets li{margin:6px 0;color:var(--ink2);line-height:1.6;font-size:var(--fs-2)}
+.mono-bullets li::marker{color:var(--accent)}
+.mono-bullets b{color:var(--ink);font-weight:600}
+.mono-links{display:flex;flex-wrap:wrap;gap:10px 22px;border-top:1px solid var(--line);padding-top:14px}
+.mono-links a{color:var(--accent);font-weight:600;font-size:var(--fs-1);text-decoration:none}
+.mono-links a::after{content:" ↗"}
+.mono-links a:hover{text-decoration:underline}
+@media (max-width:640px){
+  .mono-card{grid-template-columns:1fr;padding:16px;gap:4px}
+  .mono-num{font-size:34px}
+  .mono-chtitle{font-size:22px}
+  .research-head{padding:16px}
+}
+/* 세계 지도·국가 비교 */
+.yr{font-family:var(--serif);font-size:22px;line-height:1.1}
+.playrow{display:flex;align-items:center;gap:8px}
+.play{background:var(--panel2);border:1px solid var(--line2);color:var(--ink);border-radius:5px;height:36px;min-width:44px;padding:2px 8px;cursor:pointer;font:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;flex:none}
+.play small{font-size:9px;letter-spacing:.1em;color:var(--muted)}
+input[type="range"]{width:100%;accent-color:var(--accent);margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chips button{background:var(--panel2);border:1px solid var(--line2);color:var(--ink2);border-radius:12px;padding:3px 10px;font:inherit;font-size:var(--fs-0);cursor:pointer}
+.chips button:hover{color:var(--ink);border-color:var(--muted)}
+.ramp3{height:8px;border-radius:4px;background:linear-gradient(90deg,#E0715F,#6B7382,#5AB4FF)}
+.rampl{display:flex;justify-content:space-between;font-size:var(--fs-0);color:var(--muted);font-family:var(--mono)}
+#wm-box canvas{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab}
+#wm-box canvas:active{cursor:grabbing}
+.wm-hint{position:absolute;right:12px;bottom:10px;font-size:var(--fs-0);color:var(--muted);pointer-events:none}
+.subhead{padding:10px 16px 0;font-size:var(--fs-0);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-top:1px solid var(--line)}
+.chartbox.small{flex:none;min-height:0;height:210px}
+.list.two .it{grid-template-columns:minmax(0,1fr) 58px}
+.list .n .m{color:var(--muted);font-size:var(--fs-0);margin-left:4px}
+.detail .fig.mini{height:120px;margin:8px 0 0;border:0;background:transparent}
+.linkbtn{background:none;border:0;color:var(--accent);font:inherit;font-size:var(--fs-1);cursor:pointer;padding:6px 0 0;text-align:left}
+label.chk{display:flex;gap:6px;align-items:center;font-size:var(--fs-1);color:var(--ink2);text-transform:none;letter-spacing:0;cursor:pointer}
+.evlist .evbtn{background:none;border:0;padding:0;text-align:left;color:var(--ink2);font:inherit;font-size:var(--fs-1);cursor:pointer}
+.evlist .evbtn:hover{color:var(--ink)}
 /* 오른쪽 패널: 지구본은 위에 고정, 그 아래만 스크롤 */
 .detail{overflow:hidden}
 .detail-scroll{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:14px;border-top:1px solid var(--line);margin-inline:-14px;padding:12px 14px 0}
@@ -135,7 +190,9 @@ select{width:100%;background:var(--panel2);color:var(--ink);border:1px solid var
       <span class="eyebrow">해협·운하와 한국 항만의 일별 해상 물동량 · IMF PortWatch (AIS)</span>
     </div>
     <div class="tabs" role="tablist">
-      <button class="tab" role="tab" aria-selected="true" data-view="cp">해협·운하</button>
+      <button class="tab" role="tab" aria-selected="true" data-view="wm">세계 지도</button>
+      <button class="tab" role="tab" aria-selected="false" data-view="cp">해협·운하</button>
+      <button class="tab" role="tab" aria-selected="false" data-view="ct">국가 비교</button>
       <button class="tab" role="tab" aria-selected="false" data-view="kr">한국 항만</button>
       <button class="tab" role="tab" aria-selected="false" data-view="story">호르무즈 × 한국</button>
       <button class="tab" role="tab" aria-selected="false" data-view="about">정보</button>
@@ -143,7 +200,46 @@ select{width:100%;background:var(--panel2);color:var(--ink);border:1px solid var
   </div>
 
   <!-- ===================== 해협·운하 ===================== -->
-  <div class="view on" id="view-cp">
+  <!-- ===================== 세계 지도 ===================== -->
+  <div class="view on" id="view-wm">
+    <div class="app">
+      <aside class="rail">
+        <div class="field"><span class="lbl">지표</span>
+          <div class="seg" data-key="metric" data-scope="wm">
+            <button data-v="pc" aria-pressed="true">입항 척수</button><button data-v="vol" aria-pressed="false">물동량(톤)</button>
+          </div></div>
+        <div class="field"><label for="wm-week">4주 창의 마지막 날</label>
+          <span class="yr" id="wm-date"></span>
+          <div class="playrow"><button class="play" id="wm-play" aria-label="재생"><small>PLAY</small><span id="wm-playicon">▶</span></button><input type="range" id="wm-week" min="0" max="0" step="1" value="0"></div>
+        </div>
+        <div class="field"><span class="lbl">재생 속도</span>
+          <div class="seg" data-key="speed" data-scope="wm">
+            <button data-v="4" aria-pressed="false">느리게</button><button data-v="10" aria-pressed="true">보통</button><button data-v="24" aria-pressed="false">빠르게</button>
+          </div></div>
+        <div class="field"><span class="lbl">지역으로 이동</span><div class="chips" id="wm-regions"></div></div>
+        <div class="field"><span class="lbl">색: 4주 창 평년 대비</span>
+          <div class="ramp3"></div><div class="rampl"><span>−50%</span><span>0</span><span>+50%</span></div>
+          <p class="note m">점 크기는 최근 52주 평균 규모. 회색 작은 점은 규모가 작아(4주 입항 8척·물동량 4만 톤 미만) 계산하지 않은 항만이다.</p></div>
+        <div class="field"><span class="lbl">사건 (누르면 그 무렵으로)</span><div class="evlist" id="wm-ev"></div></div>
+      </aside>
+      <main class="stage">
+        <div class="kpis" id="wm-kpis"></div>
+        <div class="chartbox" id="wm-box"><canvas id="wm-canvas" role="img" aria-label="세계 항만의 평년 대비 변화 지도"></canvas><div class="tip"></div><div class="loading">불러오는 중…</div><div class="wm-hint">휠·끌기로 확대·이동 · 점을 누르면 상세</div></div>
+      </main>
+      <aside class="detail">
+        <div id="wm-info"></div>
+        <div class="detail-scroll">
+          <div><div class="sub">이 4주, 규모 상위 25% 항만 가운데</div><h2>평년보다 크게 줄어든 곳</h2></div>
+          <div class="list two" id="wm-down"></div>
+          <div><h2>크게 늘어난 곳</h2></div>
+          <div class="list two" id="wm-up"></div>
+          <p class="note m">평년이 작은 항만은 비율이 크게 튄다. 예컨대 여수는 2019년 주당 0.7척에서 최근 18척으로 늘어 계속 상한(+200%↑)에 걸린다. 점을 눌러 추이를 함께 보는 편이 좋다.</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <div class="view" id="view-cp">
     <div class="app">
       <aside class="rail">
         <div class="field"><label for="cp-sel">해협·운하</label><select id="cp-sel"></select></div>
@@ -182,6 +278,47 @@ select{width:100%;background:var(--panel2);color:var(--ink);border:1px solid var
           <div><div class="sub">28곳 한눈에</div><h2>최근 4주, 평년 대비</h2></div>
           <p class="note m" id="cp-list-note"></p>
           <div class="list" id="cp-list"></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- ===================== 국가 비교 ===================== -->
+  <div class="view" id="view-ct">
+    <div class="app">
+      <aside class="rail">
+        <div class="field"><label for="ct-sel">나라·권역</label><select id="ct-sel"></select></div>
+        <div class="field"><span class="lbl">지표</span>
+          <div class="seg" data-key="metric" data-scope="ct">
+            <button data-v="pc" aria-pressed="true">입항</button><button data-v="im" aria-pressed="false">수입(톤)</button><button data-v="ex" aria-pressed="false">수출(톤)</button>
+          </div></div>
+        <div class="field"><span class="lbl">보기</span>
+          <div class="seg" data-key="view" data-scope="ct">
+            <button data-v="lvl" aria-pressed="true">주간 값</button><button data-v="dev" aria-pressed="false">평년 대비(%)</button>
+          </div></div>
+        <div class="field"><span class="lbl">기간</span>
+          <div class="seg" data-key="range" data-scope="ct">
+            <button data-v="all" aria-pressed="false">전체</button><button data-v="3y" aria-pressed="true">3년</button><button data-v="1y" aria-pressed="false">1년</button>
+          </div></div>
+        <div class="field"><label for="ct-cmp">함께 볼 나라 (평년 대비 보기)</label><select id="ct-cmp"></select></div>
+        <p class="note m">주간 값은 4주 이동평균, 회색 띠는 평년 범위(<span class="by"></span> 같은 시기). 평년 대비는 4주 창 합을 기준연도 같은 시기의 평균과 견준 것이라 규모가 다른 나라끼리 겹쳐 볼 수 있다. 아래 월간 무역 지수는 PortWatch가 AIS 물동량에 단가를 곱해 만든 추정치(2024년 = 100)다.</p>
+      </aside>
+      <main class="stage">
+        <div class="kpis" id="ct-kpis"></div>
+        <div class="legend-inline" id="ct-legend"></div>
+        <div class="chartbox" id="ct-box"><svg role="img" aria-label="나라별 주간 추이"></svg><div class="tip"></div><div class="loading">불러오는 중…</div></div>
+        <div class="subhead">월간 무역 지수 · PortWatch TradeNow (2024년 = 100) · <span style="color:var(--accent)">금액</span> · <span style="color:var(--warm)">물량</span></div>
+        <div class="chartbox small" id="ct-tn"><svg role="img" aria-label="월간 무역 지수"></svg><div class="tip"></div></div>
+      </main>
+      <aside class="detail">
+        <div class="detail-scroll" style="border-top:0;padding-top:0">
+          <div><div class="sub">최근 4주, 평년 대비</div><h2>순위</h2></div>
+          <div class="seg" data-key="group" data-scope="ct">
+            <button data-v="c" aria-pressed="true">나라</button><button data-v="r" aria-pressed="false">권역</button>
+          </div>
+          <label class="chk"><input type="checkbox" id="ct-small"> 하루 입항 5척 미만인 나라도 보기</label>
+          <p class="note m" id="ct-rank-note"></p>
+          <div class="list" id="ct-list"></div>
         </div>
       </aside>
     </div>
@@ -272,36 +409,71 @@ select{width:100%;background:var(--panel2);color:var(--ink);border:1px solid var
 
   <!-- ===================== 정보 ===================== -->
   <div class="view" id="view-about">
-    <div class="doc"><div class="col">
-      <h3>이 대시보드는</h3>
-      <p>선박자동식별장치(AIS) 신호로 추정한 일별 해상 물동량을 해협·운하 28곳과 한국 항만에 대해 보여 준다. <span id="ab-cov"></span> 자료는 IMF와 옥스퍼드대가 만드는 <a href="https://portwatch.imf.org/" target="_blank" rel="noopener">IMF PortWatch</a>이고, 매주 화요일 갱신된다. 이 사이트는 그 자료를 받아 DuckDB에 쌓고, 평년 범위와 비교하는 그림으로 다시 그린다.</p>
-      <div class="wrap"><table>
-        <tr><th>항목</th><th>값</th></tr>
-        <tr><td>자료 수집 시각</td><td id="ab-vintage"></td></tr>
-        <tr><td>PortWatch 최종 수정</td><td id="ab-edit"></td></tr>
-        <tr><td>해협 자료 끝</td><td id="ab-cp"></td></tr>
-        <tr><td>항만 자료 끝</td><td id="ab-pt"></td></tr>
-        <tr><td>기준연도(평년 범위)</td><td><span class="by"></span> (2020년은 코로나19 급락으로 뺀다)</td></tr>
-      </table></div>
-      <h3>지표</h3>
-      <ul>
-        <li><b>통과 척수</b>: 해협·운하를 지난 선박 수. 탱커와 화물선(컨테이너, 건화물, 일반화물, 로로선)만 센다.</li>
-        <li><b>통과량</b>: 지나간 배가 싣고 있던 화물 추정량(메트릭톤). 선박의 재화중량톤수(DWT)에 흘수로 본 적재율을 곱해 구한다.</li>
-        <li><b>입항</b>: 항만 경계에 들어와 머문 선박 수.</li>
-        <li><b>수입·수출</b>: 입항 전후 흘수 변화로 추정한 하역·선적량(메트릭톤). 컨테이너선의 동시 하역·선적과 평형수는 PortWatch가 보정한다.</li>
-        <li><b>평년 범위</b>: 기준연도 같은 날짜(연도 겹쳐 보기와 같은 달·일)의 이동평균 최솟값~최댓값. 가운데 점선은 평균이고, “평년 대비”는 이 평균에 대한 비율이다.</li>
-        <li><b>최근 4주, 평년 대비</b>: 마지막으로 7일이 다 찬 4주의 합을 기준연도 같은 주들의 평균 합과 비교한다.</li>
-      </ul>
-      <h3>한계</h3>
-      <ul>
-        <li>AIS 추정치는 공식 통계가 아니다. 세계 합계는 공식 무역통계와 잘 맞지만(전년 대비 증가율 상관 0.8~0.95, Arslanalp 외 2025), 개별 항만·국가의 짧은 기간 값은 잡음이 크다.</li>
-        <li>환적 화물이 수출입에 섞인다. AIS를 끄거나 위치를 조작한 선박은 빠진다. 해상 운송만 다룬다.</li>
-        <li>PortWatch는 방법론을 고치면 과거 값도 바꾼다. 이 저장소는 수집일마다 원자료 스냅샷을 남긴다.</li>
-      </ul>
-      <h3>자료와 인용</h3>
-      <p>IMF PortWatch (portwatch.imf.org). AIS 원자료는 UN Global Platform. 방법론: Arslanalp, Koepke, Verschuur (2021) “Tracking Trade from Space”, IMF WP/21/225; Arslanalp 외 (2025) “Nowcasting Global Trade from Space”, IMF WP/25/93. 사건 날짜는 PortWatch 교란 사건 목록(파나마, 홍해, 호르무즈)과 GDACS 태풍 경보를 따른다. 자료 이용은 <a href="https://www.imf.org/external/terms.htm" target="_blank" rel="noopener">IMF 이용 조건</a>을 따른다.</p>
-      <p>짝 사이트: <a href="https://pilsunchoi.github.io/TradeNetworkAtlas/" target="_blank" rel="noopener">Trade Network Atlas</a> — BACI로 본 품목별 세계 교역 네트워크(연 단위).</p>
-    </div></div>
+    <div class="research">
+      <div class="research-head">
+        <h2 class="h2">정보</h2>
+        <p class="lead">이 대시보드가 쓰는 자료와, 각 화면이 무엇을 어떻게 계산해 보여 주는지를 해설 문서 두 편으로 적었다. 각 문서는 GitHub에 올린 Markdown이고, 아래 카드에서 <b>문서 읽기</b>를 누르면 열린다. 카드 아래의 링크는 그 문서가 설명하는 실제 코드로 연결된다.</p>
+        <p class="note">첫 문서는 선박 신호(AIS)가 어떻게 교역 통계가 되는지와 이 저장소의 수집·적재·검증 과정을 다루고, 둘째 문서는 지표의 정의와 탭마다의 계산 규칙을 다룬다. 다루는 범위는 세계 항만 <span class="n-port">–</span>곳, 해협·운하 <span class="n-cp">–</span>곳, 나라·권역 <span class="n-ct">–</span>개, 2019년 1월 1일 이후 <span class="n-wk">–</span>주다. <span id="ab-cov"></span></p>
+        <div class="status">
+          <div><span class="k">자료 수집 시각</span><span class="v" id="ab-vintage">–</span></div>
+          <div><span class="k">PortWatch 최종 수정</span><span class="v" id="ab-edit">–</span></div>
+          <div><span class="k">해협 자료 끝</span><span class="v" id="ab-cp">–</span></div>
+          <div><span class="k">항만·나라 자료 끝</span><span class="v" id="ab-pt">–</span></div>
+          <div><span class="k">기준연도(평년)</span><span class="v by"></span></div>
+          <div><span class="k">갱신</span><span class="v">매주 화요일</span></div>
+        </div>
+      </div>
+
+      <article class="mono-card">
+        <div class="mono-num">I</div>
+        <div class="mono-body">
+          <p class="mono-chlabel">해설 문서 · 자료와 방법</p>
+          <h3 class="mono-chtitle">AIS와 해상 물동량 자료 — 신호에서 지표까지</h3>
+          <p class="mono-chsub">선박 신호가 어떻게 교역 통계가 되는가. AIS의 정체와 쓸모, IMF PortWatch가 흘수에서 톤을 추정하고 보정하는 절차, 이 저장소의 수집·적재·검증 다섯 단계, 사후 수정과 한계</p>
+          <p class="mono-desc">배는 충돌을 피하려고 자기 위치와 흘수를 쉬지 않고 방송한다. 이 항행 안전용 신호를 모아 “어느 항만에 어떤 배가 들어와 얼마를 내렸는가”로 바꾸면, 통관 통계가 나오기 몇 달 전에 교역의 방향을 볼 수 있다. 이 문서는 SOLAS 제5장 제19규칙의 탑재 의무와 ITU-R M.1371 규격에서 시작해, 위성 AIS가 만든 전환, 메시지 세 갈래 가운데 경제 분석이 실제로 쓰는 두 가지(위치와 흘수), AIS 기반 자료의 갈래와 방법론의 계보, 그리고 IMF PortWatch가 입항을 세고 흘수에 재화중량톤수를 곱해 톤을 내는 세 걸음과 세 가지 보정을 차례로 적는다.</p>
+          <ul class="mono-bullets">
+            <li><b>세 가지 보정.</b> 컨테이너선의 동시 하역·선적(netting)은 세계 물동량 3분의 2를 차지하는 83개 항만에 공식 처리량을 붙여, 평형수는 선박별 용량 자료로 공선·부분·만재를 갈라, 흘수 결측은 다음 기항지 값의 역전파(결측의 3분의 2)와 확률가중 과거평균으로 메운다.</li>
+            <li><b>검증 수치.</b> 전년동월 대비 기준으로 공식 세계교역(CPB)과의 상관은 금액 0.95, 물량 0.80이다. 집계 수준이 낮아질수록 나빠진다(선진국 수입 물량 0.71). 수준이 아니라 변화율의 상관이라는 점이 중요하다.</li>
+            <li><b>사후 수정을 다루는 법.</b> PortWatch는 방법을 고치면 과거 값까지 바꾼다. 그래서 수집할 때마다 원자료를 통째 Parquet으로 남기고 <code>&lt;층&gt;_vintages</code> 뷰로 스냅샷끼리 대조한다. 2026-09-15 수정으로 일별 항만이 1,325곳에서 2,065곳으로 늘었을 때, 이 대조로 “더해지기만 했고 기존 값은 바뀌지 않았음”을 확인했다.</li>
+            <li><b>한계 일곱.</b> 공식 통계가 아니라는 점, 환적이 섞인다는 점, 운송·에너지 선박 활동의 21~30%가 공개 추적에 잡히지 않는다는 점, 흘수가 사람 입력이라 관행이 바뀌면 단차가 생긴다는 점, 통관 시점과 입항 시점의 차이, 품목을 모른다는 점, 평년이 작으면 비율이 튄다는 점.</li>
+          </ul>
+          <div class="mono-links">
+            <a href="https://github.com/pilsunchoi/MaritimePulseAtlas/blob/main/analysis/AIS_자료/AIS와_해상물동량_자료.md" target="_blank" rel="noopener">문서 읽기</a>
+            <a href="https://github.com/pilsunchoi/MaritimePulseAtlas/blob/main/scripts/01_fetch_portwatch.py" target="_blank" rel="noopener">수집 스크립트</a>
+            <a href="https://github.com/pilsunchoi/MaritimePulseAtlas/blob/main/scripts/02_build_db.py" target="_blank" rel="noopener">DuckDB 적재 스크립트</a>
+            <a href="https://github.com/pilsunchoi/MaritimePulseAtlas/blob/main/scripts/05_validate.py" target="_blank" rel="noopener">검증 스크립트</a>
+            <a href="https://portwatch.imf.org/" target="_blank" rel="noopener">IMF PortWatch</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="mono-card">
+        <div class="mono-num">II</div>
+        <div class="mono-body">
+          <p class="mono-chlabel">해설 문서 · 지표와 화면</p>
+          <h3 class="mono-chtitle">대시보드 읽는 법 — 지표의 정의와 탭마다의 계산</h3>
+          <p class="mono-chsub">여섯 화면이 무엇을 재고, 그 숫자가 어떻게 계산되며, 어디를 조심해 읽어야 하는가 — 평년 범위와 4주 창 편차의 정의부터 세계 지도의 인코딩, 호르무즈 사건 연구의 설계와 약점까지</p>
+          <p class="mono-desc"><b>공통 규칙.</b> 모든 화면은 세 가지를 공유한다. 지표(입항·수입·수출·통과 척수·통과량)의 정의, 기준연도 2019·2021·2022·2023의 같은 달·일 값으로 만든 평년 범위, 그리고 목록과 지도의 색을 만드는 “최근 4주, 평년 대비”다. 마지막 것은 7일이 다 찬 월요일 시작 주 넷의 합을 기준연도 같은 시기(±4일) 평균과 견준 것이고, 평년 값이 문턱(4주 입항 8척·물동량 4만 톤)보다 작으면 아예 계산하지 않는다. 회색 점은 “변화 없음”이 아니라 “판단하지 않음”이다.</p>
+          <p class="mono-desc"><b>화면마다.</b> 세계 지도는 항만 2,065곳 × 400주의 편차를 10% 단위 31단계 글자로 인코딩해 값 하나를 1바이트로 줄이고, Canvas 두 장으로 육지와 점을 나눠 그린다. 해협 탭은 대체 경로를 짝으로 봐야 하는 이유와 통과량을 항만 물동량과 더할 수 없는 이유를 다룬다. 국가 비교 탭은 톤에 선종별 단가(2019년 세계 평균으로 탱커 539, 건화물 288, 컨테이너·기타 4,350 달러/톤)를 곱해 만드는 무역 지수를 설명한다. 한국 항만 탭은 부산의 환적과 LNG 터미널이 탱커로 잡히는 문제를, 호르무즈 탭은 사건 연구의 설계와 그 약점을 적는다.</p>
+          <ul class="mono-bullets">
+            <li><b>왜 4주이고, 왜 달·일인가.</b> 일별 값에는 요일 효과와 배 한 척의 도착 여부에 따른 잡음이 크고, 대형 벌크선·LNG선은 몇 주에 한 번 온다. 계절성은 ISO 주가 아니라 달력 날짜에 붙으므로 평년은 같은 달·일로 짝짓는다.</li>
+            <li><b>인코딩의 대가.</b> 지도에서 읽히는 눈금은 10%포인트이고, +200%↑는 자료에 실린 상한에 걸렸다는 표시다. 정확한 값이 필요하면 점을 눌러 추이를 본다.</li>
+            <li><b>호르무즈 사건 연구의 약점.</b> 대조군(일본·중국·대만·인도) 선택이 임의적이고, PortWatch 일별 층에는 배가 어디서 왔는지가 없어 도입선 전환은 관측이 아니라 추론이다. 탱커 수입이 반등할 때 건화물도 같이 늘었는지를 반증 점검으로 둔 이유다.</li>
+            <li><b>이 그림들이 하지 않는 것.</b> 인과 추정, 계절조정, 예측, 품목, 금액, 양자 교역. 사건 표식은 눈금일 뿐 효과의 추정이 아니다.</li>
+          </ul>
+          <div class="mono-links">
+            <a href="https://github.com/pilsunchoi/MaritimePulseAtlas/blob/main/analysis/대시보드_읽기/지표와_탭_해설.md" target="_blank" rel="noopener">문서 읽기</a>
+            <a href="https://github.com/pilsunchoi/MaritimePulseAtlas/blob/main/scripts/10_export_site_data.py" target="_blank" rel="noopener">대시보드 자료 스크립트</a>
+            <a href="https://github.com/pilsunchoi/MaritimePulseAtlas/blob/main/docs/index.html" target="_blank" rel="noopener">대시보드 코드</a>
+            <a href="https://github.com/pilsunchoi/MaritimePulseAtlas/blob/main/config/settings.py" target="_blank" rel="noopener">기준연도 설정</a>
+          </div>
+        </div>
+      </article>
+
+      <div class="research-head">
+        <p class="note" style="border-left-color:var(--accent)">자료는 IMF PortWatch(portwatch.imf.org), AIS 원자료는 UN Global Platform이다. 이용은 <a href="https://www.imf.org/external/terms.htm" target="_blank" rel="noopener">IMF 이용 조건</a>을 따른다. 코드와 문서는 MIT 라이선스이고, <code>docs/data/</code>는 PortWatch의 파생물이므로 PortWatch의 조건을 따른다. 지도는 Natural Earth(퍼블릭 도메인)를 쓴다. 저장소는 <a href="https://github.com/pilsunchoi/MaritimePulseAtlas" target="_blank" rel="noopener">GitHub</a>에 있다. 짝 사이트 <a href="https://pilsunchoi.github.io/TradeNetworkAtlas/" target="_blank" rel="noopener">Trade Network Atlas</a>는 같은 교역을 관세 신고(BACI)로 해마다 본다.</p>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -391,12 +563,21 @@ function lineChart(box, o) {
   let i0 = Math.max(0, d3.bisectLeft(x, o.x0)), i1 = Math.min(x.length - 1, d3.bisectRight(x, o.x1) - 1);
   const I = d3.range(i0, i1 + 1);
   const xs = d3.scaleUtc([x[i0], x[i1]], [m.l, W - m.r]);
-  let ymax = 0;
-  for (const i of I) { for (const L of o.lines) if (L.v[i] != null) ymax = Math.max(ymax, L.v[i]); if (o.band && o.band[i]) ymax = Math.max(ymax, o.band[i].hi); }
-  const ys = d3.scaleLinear([0, ymax * 1.06 || 1], [H - m.b, m.t]).nice();
+  // y축: 기본은 0에서 시작. 음수(평년 대비 %)가 있으면 아래로 넓히고, zero:false(지수)면 값 범위에 맞춘다
+  let ymax = -Infinity, ymin = Infinity;
+  for (const i of I) {
+    for (const L of o.lines) if (L.v[i] != null) { ymax = Math.max(ymax, L.v[i]); ymin = Math.min(ymin, L.v[i]); }
+    if (o.band && o.band[i]) { ymax = Math.max(ymax, o.band[i].hi); ymin = Math.min(ymin, o.band[i].lo); }
+  }
+  if (!isFinite(ymax)) { ymax = 1; ymin = 0; }
+  const span = (ymax - Math.min(ymin, 0)) || 1, pad = (ymax - ymin) || 1;
+  const y0 = o.zero === false ? ymin - pad * 0.08 : (ymin < 0 ? ymin - span * 0.06 : 0);
+  const y1 = o.zero === false ? ymax + pad * 0.08 : ymax + span * 0.06;
+  const ys = d3.scaleLinear([y0, y1], [H - m.b, m.t]).nice();
   svg.append('g').attr('class', 'grid').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(ys).ticks(o.compact ? 3 : 6).tickSize(-(W - m.l - m.r)).tickFormat(''));
+  if (ys.domain()[0] < 0) svg.append('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', ys(0)).attr('y2', ys(0)).attr('stroke', 'var(--line2)');
   svg.append('g').attr('class', 'axis').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(xs).ticks(Math.max(2, Math.floor(W / 110))).tickSizeOuter(0));
-  svg.append('g').attr('class', 'axis').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(ys).ticks(o.compact ? 3 : 6).tickFormat(d3.format('~s')).tickSizeOuter(0));
+  svg.append('g').attr('class', 'axis').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(ys).ticks(o.compact ? 3 : 6).tickFormat(o.yfmt || d3.format('~s')).tickSizeOuter(0));
   if (o.ylab && !o.compact) svg.append('text').attr('class', 'ylab').attr('x', m.l).attr('y', m.t - 20).text(o.ylab);
   // 사건
   const ev = svg.append('g').attr('class', 'ev');
@@ -669,14 +850,16 @@ function Globe(wrap, onPick, start) {
 const S = {
   cp: {id: 'chokepoint6', metric: 'n', type: 'total', view: 'trend', range: '3y', ma: 7},
   kr: {id: 'KOR', metric: 'im', type: 'total', view: 'trend', range: '3y', ma: 28},
-  tab: 'cp'
+  wm: {metric: 'pc', week: null, speed: 10, sel: null},
+  ct: {id: 'KOR', metric: 'pc', view: 'lvl', range: '3y', group: 'c', small: false, cmp: ''},
+  tab: 'wm'
 };
 document.querySelectorAll('.seg').forEach(g => g.addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b) return;
   g.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b));
   const scope = g.dataset.scope, key = g.dataset.key;
-  S[scope][key] = key === 'ma' ? +b.dataset.v : b.dataset.v;
-  scope === 'cp' ? renderCP() : renderKR();
+  S[scope][key] = key === 'ma' || key === 'speed' ? +b.dataset.v : b.dataset.v;
+  ({cp: renderCP, kr: renderKR, wm: renderWM, ct: renderCT})[scope]();
 }));
 const fillTypes = (sel, scope) => {
   sel.innerHTML = Object.entries(TYPE_KO).map(([k, v]) => `<option value="${k}">${v}</option>`).join('');
@@ -804,6 +987,278 @@ async function renderKR() {
   need('land50', 'data/land50.js').then(() => krGlobe.land('land50')).catch(() => {});
 }
 
+// ================= 세계 항만 지도 =================
+// 항만 2,065곳 × 주. 편차는 world.js에 10% 단위 글자로 실려 있다(A=-100% … K=0 … e=+200%, '.'=계산 안 함).
+// 육지는 base 캔버스에 확대·크기가 바뀔 때만 다시 그리고, 점은 주가 바뀔 때마다 덧그린다.
+const REGIONS = [['세계', null], ['동아시아', [100, 18, 150, 46]], ['동남아', [92, -11, 128, 22]], ['남아시아', [58, 0, 95, 27]],
+  ['중동', [30, 10, 62, 32]], ['유럽', [-12, 35, 32, 66]], ['아프리카', [-20, -36, 52, 37]], ['북미', [-128, 12, -58, 55]],
+  ['남미', [-82, -45, -34, 12]], ['오세아니아', [110, -47, 180, -5]]];
+const wmBox = document.getElementById('wm-box'), wmCv = document.getElementById('wm-canvas'), wmCtx = wmCv.getContext('2d');
+const wmBase = document.createElement('canvas'), wmBctx = wmBase.getContext('2d');
+const wmProj = d3.geoNaturalEarth1(), wmGrat = d3.geoGraticule10(), wmTip = wmBox.querySelector('.tip');
+const wmSlider = document.getElementById('wm-week');
+const devFill = d3.scaleLinear([-0.5, 0, 0.5], ['#E0715F', '#6B7382', '#5AB4FF']).clamp(true);
+let WD = null, wmXY = null, wmW = 0, wmH = 0, wmDpr = 1, wmT = d3.zoomIdentity, wmDirty = true, wmTimer = null, wmHover = null, wmRaf = 0;
+const wmLayer = () => S.wm.metric === 'vol' ? PW['world:vol'] : WD.pc;
+const wmUnit = () => S.wm.metric === 'vol' ? '천 톤/주' : '척/주';
+const wmDev = (p, i) => { const j = WD.alph.indexOf(wmLayer().dev[p][i]); return j < 0 ? null : (j - 10) / 10; };
+// +200%는 자료에 실린 상한이다(평년이 작은 항만은 비율이 크게 튄다). 잘린 값임을 드러낸다.
+const pctCap = d => d == null ? '–' : d >= 2 ? '+200%↑' : pct(d);
+const wmEnd = i => new Date(parse(WD.weeks[i]).getTime() + 6 * DAY);
+function wmPrep(L) {
+  if (L.order) return;
+  const s = L.size.map(v => v || 0), sorted = s.slice().sort(d3.ascending);
+  L.order = d3.range(s.length).sort((a, b) => s[b] - s[a]);     // 큰 점을 먼저 그려 작은 점이 위에 보이게
+  L.r = d3.scaleSqrt([0, d3.quantile(sorted, 0.995)], [1.4, 9]).clamp(true);
+  L.p75 = d3.quantile(sorted, 0.75);
+}
+const wmZoom = d3.zoom().scaleExtent([1, 24]).on('zoom', e => {
+  wmT = e.transform; wmDirty = true; wmRequest();
+  if (wmT.k > 2.5 && !PW.land50) need('land50', 'data/land50.js').then(() => { wmDirty = true; wmRequest(); }).catch(() => {});
+});
+d3.select(wmCv).call(wmZoom);
+function wmFit() {
+  const w = wmBox.clientWidth, h = wmBox.clientHeight;
+  if (w < 120 || h < 80 || !WD) return false;
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  if (w !== wmW || h !== wmH || dpr !== wmDpr) {
+    wmW = w; wmH = h; wmDpr = dpr;
+    for (const c of [wmCv, wmBase]) { c.width = w * dpr; c.height = h * dpr; }
+    wmProj.fitExtent([[6, 6], [w - 6, h - 6]], {type: 'Sphere'});
+    wmXY = WD.ports.map(p => wmProj([p[5], p[4]]));
+    wmZoom.extent([[0, 0], [w, h]]).translateExtent([[0, 0], [w, h]]);
+    wmDirty = true;
+  }
+  return true;
+}
+function wmDrawBase() {
+  const k = wmT.k, c = wmBctx;
+  c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, wmBase.width, wmBase.height);
+  c.setTransform(wmDpr * k, 0, 0, wmDpr * k, wmDpr * wmT.x, wmDpr * wmT.y);
+  const path = d3.geoPath(wmProj, c);
+  c.beginPath(); path({type: 'Sphere'}); c.fillStyle = '#121821'; c.fill();
+  c.beginPath(); path(wmGrat); c.strokeStyle = 'rgba(143,152,168,.10)'; c.lineWidth = .6 / k; c.stroke();
+  const land = (k > 2.5 && landGeo('land50')) || landGeo('land110');
+  c.beginPath(); path(land); c.fillStyle = '#262F3C'; c.fill(); c.strokeStyle = '#3A4556'; c.lineWidth = .5 / k; c.stroke();
+  c.beginPath(); path({type: 'Sphere'}); c.strokeStyle = '#343C49'; c.lineWidth = 1 / k; c.stroke();
+  wmDirty = false;
+}
+function wmDraw() {
+  wmRaf = 0;
+  if (!wmFit()) return;
+  if (wmDirty) wmDrawBase();
+  const c = wmCtx, i = S.wm.week, L = wmLayer(), rk = Math.min(2.2, Math.sqrt(wmT.k));
+  c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, wmCv.width, wmCv.height); c.drawImage(wmBase, 0, 0);
+  c.setTransform(wmDpr, 0, 0, wmDpr, 0, 0);
+  for (const p of L.order) {
+    const x = wmT.applyX(wmXY[p][0]), y = wmT.applyY(wmXY[p][1]);
+    if (x < -12 || y < -12 || x > wmW + 12 || y > wmH + 12) continue;
+    const d = wmDev(p, i);
+    c.beginPath(); c.arc(x, y, (d == null ? 1.1 : L.r(L.size[p] || 0)) * rk, 0, 2 * Math.PI);
+    c.fillStyle = d == null ? 'rgba(107,115,130,.45)' : devFill(d); c.globalAlpha = d == null ? 1 : .88; c.fill(); c.globalAlpha = 1;
+  }
+  for (const [p, strong] of [[wmHover, false], [S.wm.sel, true]]) {
+    if (p == null) continue;
+    const x = wmT.applyX(wmXY[p][0]), y = wmT.applyY(wmXY[p][1]), r = Math.max(6, L.r(L.size[p] || 0) * rk + 3);
+    c.beginPath(); c.arc(x, y, r, 0, 2 * Math.PI); c.lineWidth = strong ? 2 : 1.3; c.strokeStyle = strong ? '#E6E9EF' : '#B4BCC9'; c.stroke();
+    if (strong) {
+      c.font = '600 12.5px "Instrument Sans","Malgun Gothic",sans-serif';
+      const t = WD.ports[p][1], tw = c.measureText(t).width, lx = x + r + 4 + tw > wmW - 4 ? x - r - 4 - tw : x + r + 4;
+      c.lineWidth = 3; c.strokeStyle = 'rgba(14,17,22,.9)'; c.strokeText(t, lx, y + 4); c.fillStyle = '#E6E9EF'; c.fillText(t, lx, y + 4);
+    }
+  }
+}
+function wmRequest() { if (!wmRaf) wmRaf = requestAnimationFrame(wmDraw); }
+function wmPick(ev) {
+  const r = wmCv.getBoundingClientRect(), mx = ev.clientX - r.left, my = ev.clientY - r.top;
+  let best = null, bd = 10;
+  for (let p = 0; p < wmXY.length; p++) {
+    const dd = Math.hypot(wmT.applyX(wmXY[p][0]) - mx, wmT.applyY(wmXY[p][1]) - my);
+    if (dd < bd) { bd = dd; best = p; }
+  }
+  return [best, mx, my];
+}
+wmCv.addEventListener('mousemove', ev => {
+  if (!WD || !wmXY) return;
+  const [p, mx, my] = wmPick(ev);
+  if (p !== wmHover) { wmHover = p; wmRequest(); }
+  if (p == null) { wmTip.style.display = 'none'; return; }
+  const P = WD.ports[p], d = wmDev(p, S.wm.week), L = wmLayer();
+  wmTip.innerHTML = `<b>${P[1]}</b> <span class="m">${P[2]}</span><div>4주 평년 대비 <span class="${cls(d)}">${d == null ? '규모 작아 계산 안 함' : pctCap(d)}</span></div><div class="m">최근 52주 평균 ${num(L.size[p])} ${wmUnit()}</div>`;
+  wmTip.style.display = 'block';
+  const tw = wmTip.offsetWidth, th = wmTip.offsetHeight;
+  wmTip.style.left = (mx + 14 + tw > wmW ? mx - 14 - tw : mx + 14) + 'px';
+  wmTip.style.top = Math.min(wmH - th - 4, Math.max(4, my - th / 2)) + 'px';
+});
+wmCv.addEventListener('mouseleave', () => { wmHover = null; wmTip.style.display = 'none'; wmRequest(); });
+wmCv.addEventListener('click', ev => { if (!WD || !wmXY) return; const [p] = wmPick(ev); if (p != null) { S.wm.sel = p; wmInfo(); wmLists(); wmRequest(); } });
+function wmFocus(p, kmin = 4) {
+  const [x, y] = wmXY[p], k = Math.max(wmT.k, kmin);
+  d3.select(wmCv).transition().duration(750).call(wmZoom.transform, d3.zoomIdentity.translate(wmW / 2 - k * x, wmH / 2 - k * y).scale(k));
+}
+document.getElementById('wm-regions').innerHTML = REGIONS.map(([n], k) => `<button data-k="${k}">${n}</button>`).join('');
+document.getElementById('wm-regions').onclick = e => {
+  const b = e.target.closest('button'); if (!b || !wmXY) return;
+  const box = REGIONS[+b.dataset.k][1];
+  if (!box) return d3.select(wmCv).transition().duration(750).call(wmZoom.transform, d3.zoomIdentity);
+  const [x0, y0] = wmProj([box[0], box[3]]), [x1, y1] = wmProj([box[2], box[1]]);
+  const k = Math.min(24, 0.92 * Math.min(wmW / (x1 - x0), wmH / (y1 - y0)));
+  d3.select(wmCv).transition().duration(750).call(wmZoom.transform, d3.zoomIdentity.translate(wmW / 2 - k * (x0 + x1) / 2, wmH / 2 - k * (y0 + y1) / 2).scale(k));
+};
+function wmKpis() {
+  const i = S.wm.week, wd = wmLayer().world[i];
+  let n = 0, dn = 0, up = 0;
+  for (let p = 0; p < WD.ports.length; p++) { const d = wmDev(p, i); if (d == null) continue; n++; if (d <= -0.1) dn++; else if (d >= 0.1) up++; }
+  document.getElementById('wm-kpis').innerHTML = `<div class="t">${S.wm.metric === 'pc' ? '입항 척수' : '물동량'}<small>4주 창 ${iso(parse(WD.weeks[Math.max(0, i - 3)]))} ~ ${iso(wmEnd(i))} · 평년(${BY.join('·')}) 대비</small></div>
+    <div class="kpi"><div class="k">세계 전체</div><div class="v ${cls(wd)}">${pct(wd)}</div></div>
+    <div class="kpi"><div class="k">10% 넘게 감소</div><div class="v">${d3.format(',')(dn)}<small> / ${d3.format(',')(n)}곳</small></div></div>
+    <div class="kpi"><div class="k">10% 넘게 증가</div><div class="v">${d3.format(',')(up)}<small> / ${d3.format(',')(n)}곳</small></div></div>`;
+  document.getElementById('wm-date').textContent = fDate(wmEnd(i));
+}
+function wmLists() {
+  const L = wmLayer(), i = S.wm.week, rows = [];
+  for (let p = 0; p < WD.ports.length; p++) { if ((L.size[p] || 0) < L.p75) continue; const d = wmDev(p, i); if (d != null) rows.push([p, d]); }
+  const size = p => L.size[p] || 0;
+  const item = ([p, d]) => `<button class="it" data-p="${p}" aria-current="${p === S.wm.sel}"><span class="n">${WD.ports[p][1]}<span class="m">${WD.ports[p][2]}</span></span><span class="s ${cls(d)}">${pctCap(d)}</span></button>`;
+  const down = rows.slice().sort((a, b) => a[1] - b[1] || size(b[0]) - size(a[0]));    // 같은 값이면 큰 항만을 위에
+  const up = rows.slice().sort((a, b) => b[1] - a[1] || size(b[0]) - size(a[0]));
+  document.getElementById('wm-down').innerHTML = down.slice(0, 10).map(item).join('');
+  document.getElementById('wm-up').innerHTML = up.slice(0, 10).map(item).join('');
+}
+['wm-down', 'wm-up'].forEach(id => document.getElementById(id).onclick = e => {
+  const b = e.target.closest('.it'); if (!b) return;
+  S.wm.sel = +b.dataset.p; wmFocus(S.wm.sel); wmInfo(); wmLists(); wmRequest();
+});
+function wmInfo() {
+  const el = document.getElementById('wm-info'), p = S.wm.sel;
+  if (p == null) { el.innerHTML = `<div class="sub">항만</div><h2>지도에서 항만을 고르세요</h2><p class="note m" style="margin-top:6px">점을 누르면 그 항만의 평년 대비 추이가 여기에 나온다. 아래 목록의 항만을 눌러도 된다.</p>`; return; }
+  const P = WD.ports[p], L = wmLayer(), i = S.wm.week, d = wmDev(p, i);
+  const kr = P[3] === 'KOR' && KOR.ports.some(q => q.id === P[0] && q.wk_im);
+  el.innerHTML = `<div class="sub">${P[2]} · ${P[3]}</div><h2>${P[1]}</h2>
+    <div class="kv" style="margin-top:8px"><span class="k">4주 평년 대비 (${iso(wmEnd(i))}까지)</span><span class="v ${cls(d)}">${pctCap(d)}</span>
+      <span class="k">최근 52주 평균</span><span class="v">${num(L.size[p])} <span class="dim">${wmUnit()}</span></span></div>
+    <div class="fig mini" id="wm-mini"><svg></svg><div class="tip"></div></div>
+    ${kr ? '<button class="linkbtn" id="wm-tokr">한국 항만 탭에서 자세히 보기 →</button>' : ''}`;
+  const x = WD.weeks.map(parse), v = x.map((_, k) => wmDev(p, k));
+  lineChart(document.getElementById('wm-mini'), {x, x0: x[0], x1: x[x.length - 1], compact: true, yfmt: d3.format('+.0%'),
+    lines: [{v, color: 'var(--accent)', w: 1.2}], events: [{d: x[i]}], tip: k => `<b>${iso(wmEnd(k))}까지 4주</b><div>${pct(v[k])}</div>`});
+  const b = document.getElementById('wm-tokr');
+  if (b) b.onclick = () => { S.kr.id = P[0]; krSel.value = P[0]; document.querySelector('.tab[data-view=kr]').click(); };
+}
+function wmUpdate() { wmKpis(); wmLists(); if (S.wm.sel != null && !wmTimer) wmInfo(); wmRequest(); }
+wmSlider.oninput = () => { S.wm.week = +wmSlider.value; wmUpdate(); };
+function wmStop() { if (wmTimer) { wmTimer.stop(); wmTimer = null; if (S.wm.sel != null) wmInfo(); } document.getElementById('wm-playicon').textContent = '▶'; }
+function wmPlay() {
+  if (S.wm.week >= WD.weeks.length - 1) S.wm.week = 0;
+  document.getElementById('wm-playicon').textContent = '❚❚';
+  wmTimer = d3.interval(() => {
+    if (S.wm.week >= WD.weeks.length - 1) return wmStop();
+    S.wm.week++; wmSlider.value = S.wm.week; wmUpdate();
+  }, 1000 / S.wm.speed);
+}
+document.getElementById('wm-play').onclick = () => { if (!WD) return; wmTimer ? wmStop() : wmPlay(); };
+function wmEvents() {
+  const el = document.getElementById('wm-ev');
+  el.innerHTML = META.events.map((e, k) => `<button class="evbtn" data-k="${k}"><span class="d">${e.d}</span>${e.ko}</button>`).join('');
+  el.onclick = e => {
+    const b = e.target.closest('.evbtn'); if (!b) return;
+    const t = parse(META.events[+b.dataset.k].d).getTime() + 21 * DAY;   // 사건 뒤 3주가 4주 창에 들도록
+    S.wm.week = Math.min(WD.weeks.length - 1, d3.bisectCenter(WD.weeks.map(w => parse(w).getTime()), t));
+    wmSlider.value = S.wm.week; wmUpdate(); if (S.wm.sel != null) wmInfo();
+  };
+}
+async function renderWM() {
+  const ld = wmBox.querySelector('.loading');
+  if (!WD) {
+    ld.classList.add('on'); WD = await need('world', 'data/world.js'); ld.classList.remove('on');
+    wmSlider.max = WD.weeks.length - 1;
+    if (S.wm.week == null) S.wm.week = WD.weeks.length - 1;
+    wmSlider.value = S.wm.week; wmEvents();
+  }
+  if (S.wm.metric === 'vol' && !PW['world:vol']) { ld.classList.add('on'); await need('world:vol', 'data/world_vol.js'); ld.classList.remove('on'); }
+  wmPrep(wmLayer());
+  wmFit(); wmDirty = true;
+  wmUpdate(); wmInfo();
+  if (wmTimer) { wmStop(); wmPlay(); }
+}
+
+// ================= 국가 비교 =================
+const ctSel = document.getElementById('ct-sel'), ctCmp = document.getElementById('ct-cmp');
+const CT_UNIT = {pc: '척/주', im: '천 톤/주', ex: '천 톤/주'}, CT_KO = {pc: '입항', im: '수입', ex: '수출'};
+let CT = null;
+function bandW(x, v) {   // 주 단위 평년 범위: 기준연도마다 같은 달·일에 가장 가까운 주(±4일)
+  const t = x.map(d => d.getTime());
+  return x.map(d => {
+    const a = [];
+    for (const y of BY) {
+      const tg = Date.UTC(y, d.getUTCMonth(), d.getUTCDate()), j = d3.bisectCenter(t, tg);
+      if (Math.abs(t[j] - tg) <= 4 * DAY && v[j] != null) a.push(v[j]);
+    }
+    return a.length >= 2 ? {lo: d3.min(a), hi: d3.max(a), mean: d3.mean(a)} : null;
+  });
+}
+async function ctInit() {
+  CT = await need('countries', 'data/countries.js');
+  const byKo = (a, b) => d3.ascending(a.ko, b.ko);
+  const regs = CT.list.filter(c => c.agg).sort((a, b) => a.id === 'WLD' ? -1 : b.id === 'WLD' ? 1 : byKo(a, b));
+  const cs = CT.list.filter(c => !c.agg).sort(byKo);
+  const opt = c => `<option value="${c.id}">${c.ko}${c.ko === c.name ? '' : ' · ' + c.name}</option>`;
+  const opts = `<optgroup label="권역">${regs.map(opt).join('')}</optgroup><optgroup label="나라">${cs.map(opt).join('')}</optgroup>`;
+  ctSel.innerHTML = opts; ctSel.value = S.ct.id;
+  ctCmp.innerHTML = '<option value="">함께 볼 나라 없음</option>' + opts; ctCmp.value = S.ct.cmp;
+  ctSel.onchange = () => { S.ct.id = ctSel.value; renderCT(); };
+  ctCmp.onchange = () => { S.ct.cmp = ctCmp.value; renderCT(); };
+  document.getElementById('ct-small').onchange = e => { S.ct.small = e.target.checked; ctList(); };
+  document.getElementById('ct-list').onclick = e => { const b = e.target.closest('.it'); if (!b) return; S.ct.id = b.dataset.id; ctSel.value = S.ct.id; renderCT(); };
+}
+function ctList() {
+  const m = S.ct.metric, L = CT.weeks.length;
+  const rows = CT.list.filter(c => (S.ct.group === 'r') === c.agg && (c.agg || S.ct.small || (c.pc_day || 0) >= 5))
+    .sort((a, b) => d3.ascending(a.dev[m] ?? 9, b.dev[m] ?? 9));
+  document.getElementById('ct-rank-note').textContent = `${iso(parse(CT.weeks[L - 4]))} ~ ${iso(new Date(parse(CT.weeks[L - 1]).getTime() + 6 * DAY))} · ${CT_KO[m]} · ${rows.length}곳. 선은 최근 2년 주간 값.`;
+  document.getElementById('ct-list').innerHTML = rows.map(c => `<button class="it" data-id="${c.id}" aria-current="${c.id === S.ct.id}"><span class="n">${c.ko}</span>${spark(c.spark[m], c.dev[m])}<span class="s ${cls(c.dev[m])}">${pct(c.dev[m])}</span></button>`).join('');
+}
+async function renderCT() {
+  const box = document.getElementById('ct-box'), ld = box.querySelector('.loading');
+  ld.classList.add('on');
+  if (!CT) await ctInit();
+  const d = await need('country:' + S.ct.id, `data/country/${S.ct.id}.js`);
+  const c2 = S.ct.view === 'dev' && S.ct.cmp && S.ct.cmp !== S.ct.id ? await need('country:' + S.ct.cmp, `data/country/${S.ct.cmp}.js`) : null;
+  ld.classList.remove('on');
+  const m = S.ct.metric, x = CT.weeks.map(parse), n = x.length, raw = d[m], unit = CT_UNIT[m];
+  const v = rolling(raw, 4), b = bandW(x, v), dv = d.dev[m];
+  const s4 = d3.sum(raw.slice(-4)), ly4 = d3.sum(raw.slice(-56, -52)), yoy = ly4 ? s4 / ly4 - 1 : null;
+  let ti = d.tn.months.length - 1; while (ti > 0 && d.tn.q[ti] == null) ti--;
+  const tq = d.tn.q[ti], tql = ti >= 12 ? d.tn.q[ti - 12] : null;
+  document.getElementById('ct-kpis').innerHTML = `<div class="t">${d.ko}<small>${d.name} · ${CT_KO[m]}</small></div>
+    <div class="kpi"><div class="k">최근 4주 평균</div><div class="v">${num(s4 / 4)} <small>${unit}</small></div></div>
+    <div class="kpi"><div class="k">평년 대비</div><div class="v ${cls(dv[n - 1])}">${pct(dv[n - 1])}</div></div>
+    <div class="kpi"><div class="k">1년 전 대비</div><div class="v ${cls(yoy)}">${pct(yoy)}</div></div>
+    <div class="kpi"><div class="k">무역 물량 지수</div><div class="v">${tq == null ? '–' : num(tq)} <small>${tq == null ? '' : d.tn.months[ti] + (tql ? ' · 1년 전 ' + pct(tq / tql - 1) : '')}</small></div></div>`;
+  const events = META.events.filter(e => e.cps === '*' || (S.ct.id === 'KOR' && e.kor)).map(e => ({d: parse(e.d), label: e.ko}));
+  const x0 = rangeStart(x, S.ct.range), x1 = x[n - 1], lg = document.getElementById('ct-legend');
+  if (S.ct.view === 'lvl') {
+    lg.innerHTML = `<span><i class="sw" style="background:var(--accent)"></i>4주 이동평균</span><span><i class="sw band"></i>평년 범위(${BY.join('·')})</span>`;
+    lineChart(box, {x, x0, x1, lines: [{v, color: 'var(--accent)'}], band: b, events, ylab: unit,
+      tip: i => `<b>${iso(x[i])} 주</b><div>${num(v[i])} <span class="m">${unit}</span></div><div class="m">평년 ${b[i] ? num(b[i].mean) : '–'} · 1년 전 ${num(v[i - 52])}</div>`});
+  } else {
+    lg.innerHTML = `<span><i class="sw" style="background:var(--accent)"></i>${d.ko}</span>` + (c2 ? `<span><i class="sw" style="background:var(--warm)"></i>${c2.ko}</span>` : '') + '<span class="m">4주 창 합, 평년 대비</span>';
+    const lines = [{v: dv, color: 'var(--accent)'}]; if (c2) lines.push({v: c2.dev[m], color: 'var(--warm)'});
+    lineChart(box, {x, x0, x1, lines, events, yfmt: d3.format('+.0%'), ylab: '평년 대비',
+      tip: i => `<b>${iso(new Date(x[i].getTime() + 6 * DAY))}까지 4주</b><div>${d.ko} <span class="m">${pct(dv[i])}</span></div>` + (c2 ? `<div>${c2.ko} <span class="m">${pct(c2.dev[m][i])}</span></div>` : '')});
+  }
+  const tb = document.getElementById('ct-tn'), tx = d.tn.months.map(s => parse(s + '-01'));
+  if (d.tn.q.some(q => q != null)) {
+    lineChart(tb, {x: tx, x0: tx[0], x1: tx[tx.length - 1], zero: false, yfmt: d3.format('.0f'), ylab: '2024년 = 100',
+      lines: [{v: d.tn.v, color: 'var(--accent)'}, {v: d.tn.q, color: 'var(--warm)'}],
+      tip: i => `<b>${d.tn.months[i]}</b><div>금액 지수 <span class="m">${num(d.tn.v[i])}</span></div><div>물량 지수 <span class="m">${num(d.tn.q[i])}</span></div>`});
+  } else {
+    d3.select(tb.querySelector('svg')).selectAll('*').remove();
+    d3.select(tb.querySelector('svg')).append('text').attr('x', 16).attr('y', 28).attr('class', 'ylab').text('이 개체는 월간 무역 지수가 없다');
+  }
+  ctList();
+}
+
 // ================= 지구본 인스턴스 =================
 const cpGlobe = Globe(document.getElementById('cp-globe'), id => { S.cp.id = id; cpSel.value = id; renderCP(); });
 const krGlobe = Globe(document.getElementById('kr-globe'), id => { S.kr.id = id; krSel.value = id; renderKR(); });
@@ -893,20 +1348,35 @@ function drawStory(st) {
 }
 
 // ================= 정보 =================
-document.getElementById('ab-vintage').textContent = META.fetched_at || META.vintage;
-{ // 일별 항만 자료가 있는 한국 항만 수는 PortWatch가 범위를 바꾸면 달라진다 -> 자료에서 센다
+// 규모·범위는 글에 박아 넣지 않고 자료에서 읽는다(PortWatch가 범위를 바꾸면 달라진다).
+{
+  const txt = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+  const n = d3.format(',');
+  txt('ab-vintage', META.fetched_at || META.vintage);
+  txt('ab-edit', META.data_last_edit || '–');
+  txt('ab-cp', META.cp_d1);
+  txt('ab-pt', META.pt_d1);
+  txt('ab-n-port', META.n_ports ? n(META.n_ports) + '곳' : '–');
+  txt('ab-n-cp', n(META.n_chokepoints || CPS.list.length) + '곳');
+  txt('ab-n-ct', META.n_countries ? n(META.n_countries) + '개' : '–');
+  txt('ab-n-wk', META.n_weeks ? n(META.n_weeks) + '주' : '–');
+  document.querySelectorAll('.n-port').forEach(e => e.textContent = META.n_ports ? n(META.n_ports) : '–');
+  document.querySelectorAll('.n-cp').forEach(e => e.textContent = n(META.n_chokepoints || CPS.list.length));
+  document.querySelectorAll('.n-ct').forEach(e => e.textContent = META.n_countries ? n(META.n_countries) : '–');
+  document.querySelectorAll('.n-wk').forEach(e => e.textContent = META.n_weeks ? n(META.n_weeks) : '–');
+  // 일별 항만 자료가 있는 한국 항만 수
   const withD = KOR.ports.filter(p => p.wk_im), noD = KOR.ports.filter(p => !p.wk_im);
-  document.getElementById('ab-cov').textContent = noD.length
+  txt('ab-cov', noD.length
     ? `PortWatch의 일별 항만 층에는 한국 항만 ${KOR.ports.length}곳 중 ${withD.length}곳이 있고, 나머지 ${noD.length}곳(${noD.map(p => p.ko).join('·')})은 “한국 전체”(국가 합계)에만 들어간다.`
-    : `한국 항만 ${KOR.ports.length}곳 모두 PortWatch 일별 항만 자료가 있다.`;
+    : `한국 항만 ${KOR.ports.length}곳 모두 PortWatch 일별 항만 자료가 있어, 고를 수 있는 곳과 국가 합계의 범위가 같다.`);
 }
-document.getElementById('ab-edit').textContent = META.data_last_edit || '–';
-document.getElementById('ab-cp').textContent = META.cp_d1;
-document.getElementById('ab-pt').textContent = META.pt_d1;
 
 // ================= 탭·크기 =================
 async function renderTab() {
-  if (S.tab === 'cp') renderCP();
+  if (S.tab !== 'wm') wmStop();
+  if (S.tab === 'wm') renderWM();
+  else if (S.tab === 'cp') renderCP();
+  else if (S.tab === 'ct') renderCT();
   else if (S.tab === 'kr') renderKR();
   else if (S.tab === 'story') { storyReady = storyReady || renderStory(); drawStory(await storyReady); }
 }
@@ -918,7 +1388,7 @@ document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () =>
 // 차트 영역의 크기가 바뀌면 다시 그린다. 창 크기 변경뿐 아니라, 처음 그릴 때 영역이 0이었다가
 // 나중에 커지는 경우(창이 늦게 펼쳐지거나 틀 안에 늦게 배치될 때)도 잡는다. 스토리 그림은 st-f1과 너비가 같다.
 let rz; const rerender = () => { clearTimeout(rz); rz = setTimeout(renderTab, 150); };
-const BOXES = ['cp-box', 'kr-box', 'st-f1'].map(id => document.getElementById(id));
+const BOXES = ['wm-box', 'cp-box', 'ct-box', 'kr-box', 'st-f1'].map(id => document.getElementById(id));
 const lastSize = new Map(BOXES.map(b => [b, [b.clientWidth, b.clientHeight]]));
 if ('ResizeObserver' in window) {
   const ro = new ResizeObserver(entries => {

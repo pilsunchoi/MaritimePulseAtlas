@@ -6,8 +6,9 @@
 
 | 경로 | 내용 |
 |---|---|
-| `docs/index.html` | 대시보드(GitHub Pages). 해협·운하, 한국 항만, 호르무즈 × 한국 스토리, 정보 탭. 오른쪽 패널 위의 지구본이 고른 해협·항만으로 돌아가 위치를 보여 준다 |
-| `docs/data/*.js` | 대시보드 자료. `meta.js`, `chokepoints.js`(28곳 주별), `korea.js`(한국 항만 주별·국가 일별), `cp/<id>.js`·`port/<id>.js`(한 곳의 일별, 고를 때 읽는다), `land110.js`·`land50.js`(지구본 육지 윤곽. 50m은 한국 항만 탭을 열 때 읽는다) |
+| `docs/index.html` | 대시보드(GitHub Pages). 세계 지도, 해협·운하, 국가 비교, 한국 항만, 호르무즈 × 한국 스토리, 정보 탭. 정보 탭은 해설 문서 두 편의 소개 카드이고, 본문은 `analysis/`의 Markdown으로 연결된다. 세계 지도는 항만 2,065곳의 4주 창 평년 대비를 색으로 찍고 주 단위로 재생한다. 해협·한국 탭에서는 오른쪽 패널 위의 지구본이 고른 곳으로 돌아간다 |
+| `docs/data/*.js` | 대시보드 자료. `meta.js`, `chokepoints.js`(28곳 주별), `korea.js`(한국 항만 주별·국가 일별), `cp/<id>.js`·`port/<id>.js`(한 곳의 일별, 고를 때 읽는다), `land110.js`·`land50.js`(육지 윤곽. 50m은 확대할 때 읽는다), `world.js`·`world_vol.js`(세계 지도: 항만 2,065곳 × 주의 평년 대비를 10% 단위 글자로), `countries.js`·`country/<ISO3>.js`(나라·권역 196개의 주간·월간 자료) |
+| `analysis/` | 해설 문서(GitHub에서 읽는다). [AIS와 해상 물동량 자료](analysis/AIS_자료/AIS와_해상물동량_자료.md) — 신호의 정체와 쓸모, PortWatch의 추정·보정, 이 저장소의 다섯 단계, 사후 수정, 한계. [대시보드 읽는 법](analysis/대시보드_읽기/지표와_탭_해설.md) — 지표의 정의, 평년 범위와 4주 창 편차, 탭마다의 계산과 읽는 법. 둘 다 참고문헌이 붙는다 |
 | `scripts/` | PortWatch 수집부터 DuckDB 적재, 검증, 대시보드 자료까지 |
 | `config/settings.py` | 경로, PortWatch 층 목록, 기준연도 |
 | `.github/workflows/weekly.yml` | 매주 화요일 PortWatch 갱신 뒤 자료를 다시 만들어 커밋 |
@@ -68,3 +69,4 @@ python -m http.server 8766 --directory docs
 - **자료**: IMF PortWatch (portwatch.imf.org). AIS 원자료는 UN Global Platform. 방법론 Arslanalp, Koepke, Verschuur (2021) IMF WP/21/225, Arslanalp 외 (2025) IMF WP/25/93. 이용은 [IMF 이용 조건](https://www.imf.org/external/terms.htm)을 따른다.
 - **지도**: Natural Earth(퍼블릭 도메인)를 TopoJSON으로 묶은 world-atlas 2.0.2(110m·50m 육지). 브라우저에서 topojson-client 3.1.0(jsDelivr)으로 풀어 D3 정사영으로 그린다.
 - 코드와 문서는 MIT 라이선스. `docs/data/`는 PortWatch의 파생물이므로 PortWatch의 조건을 따른다.
+- 방법론과 지표 정의, 참고문헌은 `analysis/`의 해설 문서 두 편에 자세히 적었다.
