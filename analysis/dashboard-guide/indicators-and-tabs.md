@@ -1,7 +1,7 @@
 # 대시보드의 지표 정의와 화면별 계산
 
 해설 문서 · 지표와 화면 · [Maritime Pulse Atlas](https://pilsunchoi.github.io/MaritimePulseAtlas/) 저장소
-짝 문서: [선박자동식별장치 신호에서 해상 물동량 지표까지](../AIS_자료/AIS와_해상물동량_자료.md)
+짝 문서: [선박자동식별장치 신호에서 해상 물동량 지표까지](../ais-data/ais-and-shipping-volume.md)
 
 ---
 
